@@ -12,11 +12,11 @@ package
 
 	public class Host extends Entity
 	{
-		public var hostImage:Image;
-		public var explosionEmitter:Emitter;
-		public var collisionTime:Number = -1;
-		public var babbyViruses:uint = 0;
-		public var ticks:uint = 1;
+		private var hostImage:Image;
+		private var explosionEmitter:Emitter;
+		private var collisionTime:Number = -1;
+		private var babbyViruses:uint = 0;
+		private var ticks:uint = 1;
 		
 		public function Host()
 		{

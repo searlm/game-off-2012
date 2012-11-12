@@ -9,7 +9,7 @@ package
 	public class Powerup extends Entity
 	{
 		//[Embed(source='assets/pwrup.png')] private const POWERUP:Class;
-		public var powerupImage:Image;
+		private var powerupImage:Image;
 		
 		public function Powerup()
 		{

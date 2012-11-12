@@ -1,22 +1,24 @@
 package
 {
+	import flash.display.BitmapData;
+	
 	import net.flashpunk.Entity;
+	import net.flashpunk.FP;
+	import net.flashpunk.Sfx;
+	import net.flashpunk.graphics.Image;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
-	import net.flashpunk.graphics.Image;
-	import net.flashpunk.Sfx;
-	import net.flashpunk.FP;
-	import flash.display.BitmapData;
 
 	public class Player extends Entity
 	{
 		//[Embed(source='assets/invader.png')] private const PLAYER:Class;
 		[Embed(source='assets/pickup.mp3')] private const PICKUP:Class;
 		
-		public var speed:Number = 8;
-		public var pickupSound:Sfx = new Sfx(PICKUP);
-		public var playerImage:Image;
+		private var speed:Number = 8;
+		private var pickupSound:Sfx = new Sfx(PICKUP);
+		private var playerImage:Image;
 		
+		private var bullets:Array;
 		private var bulletWait:uint = 0;
 		
 		public function Player()
