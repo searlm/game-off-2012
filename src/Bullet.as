@@ -13,8 +13,8 @@ package
 		
 		public function Bullet()
 		{
-			bulletImage = new Image(new BitmapData(16, 16));
-			bulletImage.color = 0xab1a25;
+			bulletImage = new Image(new BitmapData(9, 9));
+			bulletImage.color = 0xd97925;
 			graphic = bulletImage;
 			
 			setHitbox(9, 9);

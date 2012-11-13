@@ -13,11 +13,11 @@ package
 		
 		public function Powerup()
 		{
-			powerupImage = new Image(new BitmapData(16, 16));
-			powerupImage.color = 0xab1a25;
+			powerupImage = new Image(new BitmapData(8, 8));
+			powerupImage.color = 0xd97925;
 			graphic = powerupImage;
 			
-			setHitbox(16, 16);
+			setHitbox(8, 8);
 			type = "powerup";
 		}
 		

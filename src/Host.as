@@ -8,21 +8,27 @@ package
 	import net.flashpunk.graphics.Emitter;
 	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Image;
+	import net.flashpunk.tweens.misc.ColorTween;
 	import net.flashpunk.utils.Ease;
 
 	public class Host extends Entity
 	{
+		private static var RUPTURE_TIME:Number = 1.5; // seconds to rupture
+		
 		private var hostImage:Image;
 		private var explosionEmitter:Emitter;
 		private var collisionTime:Number = -1;
 		private var babbyViruses:uint = 0;
 		private var ticks:uint = 1;
+		private var collisionTween:ColorTween = new ColorTween();
 		
 		public function Host()
 		{
+			collisionTween.tween(RUPTURE_TIME, 0x002635, 0xd97925);
+			
 			hostImage = new Image(new BitmapData(64, 128));
 			hostImage.color = 0x0002635;
-			hostImage.alpha = 0.7;
+			hostImage.alpha = 0.8;
 			
 			explosionEmitter = new Emitter(new BitmapData(12, 16), 4, 7);
 			explosionEmitter.newType("explosion", [0]); 
@@ -50,19 +56,27 @@ package
 				else if (collide("player", x, y)) {
 					if (collisionTime < 0) {
 						collisionTime = 0;	
+						addTween(collisionTween);
 					}
 					
 					collisionTime += FP.elapsed;
+					hostImage.color = collisionTween.color;
 					
-					if (collisionTime > 2) {
+					if (collisionTime > RUPTURE_TIME) {
+						removeTween(collisionTween);
 						spillClones();
 						destroy();
 					}
 				}
 				else {
-					collisionTime = -1;
+					if (collisionTime >= 0) {
+						removeTween(collisionTween);
+					}
+					else {
+						hostImage.color = 0x013440;
+					}
 					
-					hostImage.color = 0x013440;
+					collisionTime = -1;					
 				}
 			} 
 			else {
