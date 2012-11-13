@@ -16,14 +16,6 @@ package
 			player.x = FP.screen.width / 2 - player.width / 2;
 			player.y = FP.screen.height / 2 - player.height / 2;
 			add(player);
-			
-			var i:int;
-			/*for (i = 0; i < 10; i++) {
-				var p:Powerup = new Powerup;
-				p.x = 32 + Math.random() * (FP.screen.width - 64);
-				p.y = 32 + Math.random() * (FP.screen.height - 64);		
-				add(p);
-			}*/
 		}
 		
 		override public function update():void {
