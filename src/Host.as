@@ -98,7 +98,7 @@ package
 			FP.world.add(p);
 			
 			p = new Powerup();
-			p.x = x - 5;
+			p.x = x - 15;
 			p.y = y + height / 2;
 			FP.world.add(p);
 			
@@ -113,7 +113,7 @@ package
 			FP.world.add(p);
 			
 			p = new Powerup();
-			p.x = x + width + 5;
+			p.x = x + width + 15;
 			p.y = y + height / 2;
 			FP.world.add(p);
 			
