@@ -33,6 +33,8 @@ package
 		
 		override public function update():void
 		{
+			// TODO bounds check (or draw collidable objects around the bounds)
+			
 			if (bulletWait > 0) {
 				bulletWait--;
 			}
