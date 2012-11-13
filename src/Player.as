@@ -14,11 +14,12 @@ package
 		//[Embed(source='assets/invader.png')] private const PLAYER:Class;
 		[Embed(source='assets/pickup.mp3')] private const PICKUP:Class;
 		
+		public var bullets:uint;
+		
 		private var speed:Number = 8;
 		private var pickupSound:Sfx = new Sfx(PICKUP);
 		private var playerImage:Image;
 		
-		private var bullets:uint;
 		private var bulletWait:uint = 0;
 		
 		public function Player()
