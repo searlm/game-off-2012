@@ -55,6 +55,7 @@ package
 					collisionTime += FP.elapsed;
 					
 					if (collisionTime > 2) {
+						spillClones();
 						destroy();
 					}
 				}
@@ -73,6 +74,39 @@ package
 			if (y > FP.screen.height) {
 				world.remove(this);
 			}
+		}
+		
+		private function spillClones():void
+		{
+			var p:Powerup = new Powerup();
+			p.x = x;
+			p.y = y;
+			FP.world.add(p);
+			
+			p = new Powerup();
+			p.x = x - 5;
+			p.y = y + height / 2;
+			FP.world.add(p);
+			
+			p = new Powerup();
+			p.x = x;
+			p.y = y + height;
+			FP.world.add(p);
+			
+			p = new Powerup();
+			p.x = x + width
+			p.y = y + height;
+			FP.world.add(p);
+			
+			p = new Powerup();
+			p.x = x + width + 5;
+			p.y = y + height / 2;
+			FP.world.add(p);
+			
+			p = new Powerup();
+			p.x = x + width;
+			p.y = y;
+			FP.world.add(p);
 		}
 		
 		public function destroy():void 

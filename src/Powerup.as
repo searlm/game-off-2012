@@ -21,6 +21,15 @@ package
 			type = "powerup";
 		}
 		
+		override public function update():void
+		{
+			y += 1;
+			
+			if (y > FP.screen.height || x > FP.screen.width || x < 0 || y < 0) {
+				destroy();
+			}
+		}
+		
 		public function destroy():void 
 		{
 			FP.world.remove(this);	

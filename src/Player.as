@@ -18,7 +18,7 @@ package
 		private var pickupSound:Sfx = new Sfx(PICKUP);
 		private var playerImage:Image;
 		
-		private var bullets:Array;
+		private var bullets:uint;
 		private var bulletWait:uint = 0;
 		
 		public function Player()
@@ -39,6 +39,7 @@ package
 			var p:Powerup = collide("powerup", x, y) as Powerup;
 			if (p) {
 				pickupSound.play();
+				bullets++;
 				p.destroy();
 			}
 			
@@ -48,12 +49,13 @@ package
 			if (Input.check(Key.UP)) { y -= offset; }
 			if (Input.check(Key.DOWN)) { y += offset; }	
 			
-			if (bulletWait == 0 && Input.pressed(Key.SPACE)) {
+			if (bulletWait == 0 && bullets > 0 && Input.pressed(Key.SPACE)) {
 				var bullet:Bullet = new Bullet();
 				bullet.x = x + width / 2 - bullet.width / 2;
 				bullet.y = y - 16;
 				FP.world.add(bullet);
 				
+				bullets--;
 				bulletWait = 8;
 			}
 		}
