@@ -10,7 +10,7 @@ package
 		{
 			super(640, 480, 30, false);
 			
-			FP.world = new MyWorld;
+			FP.world = new TitleScreen;
 		}
 		
 	}
