@@ -13,6 +13,7 @@ package
 
 	public class Host extends Entity
 	{
+		private const LAYER:int = 50;
 		private const RUPTURE_TIME:Number = 1.5; // seconds to rupture
 		
 		private var hostImage:Image;
@@ -40,6 +41,7 @@ package
 			graphic = new Graphiclist(hostImage, explosionEmitter);
 			
 			setHitbox(64, 128);
+			layer = LAYER;
 			type = "host";
 		}
 		

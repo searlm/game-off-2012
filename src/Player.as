@@ -11,12 +11,14 @@ package
 
 	public class Player extends Entity
 	{
+		private const LAYER:int = 100;
+		
 		//[Embed(source='assets/invader.png')] private const PLAYER:Class;
 		[Embed(source='assets/pickup.mp3')] private const PICKUP:Class;
 		
 		public var bullets:uint;
 		
-		private var speed:Number = 8;
+		private var speed:Number = 6;
 		private var pickupSound:Sfx = new Sfx(PICKUP);
 		private var playerImage:Image;
 		
@@ -27,7 +29,8 @@ package
 			playerImage = new Image(new BitmapData(32, 32));
 			playerImage.color = 0xd97925;
 			graphic = playerImage;
-			setHitbox(32, 32);		
+			setHitbox(32, 32);
+			layer = LAYER;
 			type = "player";
 		}
 		

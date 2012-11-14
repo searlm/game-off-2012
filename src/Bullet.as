@@ -1,13 +1,16 @@
 package
 {
+	import flash.display.BitmapData;
+	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
-	import net.flashpunk.graphics.Image;
 	import net.flashpunk.Sfx;
-	import flash.display.BitmapData;
+	import net.flashpunk.graphics.Image;
 
 	public class Bullet extends Entity
 	{
+		private const LAYER:int = 100;
+		
 		//[Embed(source='assets/pwrup.png')] private const POWERUP:Class;
 		private var bulletImage:Image;
 		
@@ -18,6 +21,7 @@ package
 			graphic = bulletImage;
 			
 			setHitbox(9, 9);
+			layer = LAYER;
 			type = "bullet";
 		}
 		
