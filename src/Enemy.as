@@ -13,7 +13,7 @@ package
 
 	public class Enemy extends Entity
 	{
-		private const LAYER:int = 100;
+		private static const LAYER:int = 100;
 		
 		private var enemyImage:Image;
 		private var explosionEmitter:Emitter;

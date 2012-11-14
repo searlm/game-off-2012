@@ -13,8 +13,8 @@ package
 
 	public class Host extends Entity
 	{
-		private const LAYER:int = 50;
-		private const RUPTURE_TIME:Number = 1.5; // seconds to rupture
+		private static const LAYER:int = 50;
+		private static const RUPTURE_TIME:Number = 1.5; // seconds to rupture
 		
 		private var hostImage:Image;
 		private var explosionEmitter:Emitter;

@@ -8,7 +8,7 @@ package
 
 	public class Powerup extends Entity
 	{
-		private const LAYER:int = 100;
+		private static const LAYER:int = 100;
 		
 		//[Embed(source='assets/pwrup.png')] private const POWERUP:Class;
 		private var powerupImage:Image;

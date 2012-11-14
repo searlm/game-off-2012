@@ -12,7 +12,7 @@ package
 	{
 		public const BOTTOM_HUD_HEIGHT:int = 32;
 		
-		private const HUD_LAYER:int = -1;
+		private static const HUD_LAYER:int = -1;
 		
 		private var ticksUntilHostSpawn:uint = 0;
 		private var nextHostSpawnSector:int = -1;

@@ -11,7 +11,7 @@ package
 
 	public class Player extends Entity
 	{
-		private const LAYER:int = 100;
+		private static const LAYER:int = 100;
 		
 		//[Embed(source='assets/invader.png')] private const PLAYER:Class;
 		[Embed(source='assets/pickup.mp3')] private const PICKUP:Class;
