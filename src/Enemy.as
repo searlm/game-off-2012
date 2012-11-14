@@ -51,9 +51,10 @@ package
 					destroy();
 				}
 				else {
-					if (collide("player", x, y)) {
-						// TODO ... this kills the player
-						trace("AAAAAAAAH!");
+					if (collide("player", x, y)) {						
+						var myWorld:MyWorld = FP.world as MyWorld;
+						myWorld.startDeathSequence();
+						return;
 					}
 					
 					var otherEnemy:Enemy = collide("enemy", x, y + 1) as Enemy;

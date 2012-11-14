@@ -7,6 +7,8 @@ package
 	import net.flashpunk.World;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Text;
+	import net.flashpunk.utils.Input;
+	import net.flashpunk.utils.Key;
 
 	public class MyWorld extends World
 	{
@@ -22,6 +24,8 @@ package
 		private var player:Player;
 		private var bulletText:Text = new Text("0");
 		
+		private var deathSequence:Boolean = false;
+		
 		public function MyWorld()
 		{
 			// TODO figure out dat CSS (?)
@@ -32,8 +36,34 @@ package
 			initPlayer();
 		}
 		
+		public function startDeathSequence():void
+		{
+			deathSequence = true;
+			
+ 			var directionsText:Text = new Text("press the spacebar to try again");			
+			directionsText.color = 0x222222;
+			directionsText.size = 24;
+			
+			var textEntity:Entity = new Entity();
+			textEntity.graphic = directionsText;
+			textEntity.x = FP.screen.width / 2 - directionsText.width / 2;
+			textEntity.y = FP.screen.height - 64;
+			textEntity.layer = HUD_LAYER;
+			add(textEntity);
+		}
+		
 		override public function update():void 
 		{	
+			if (deathSequence) {				
+				if (Input.pressed(Key.SPACE)) {
+					FP.world = new MyWorld;
+					return;
+				}
+				
+				//super.update();
+				return;
+			}
+			
 			bulletText.text = "" + player.bullets;
 			
 			if (ticksUntilHostSpawn <= 0) {
