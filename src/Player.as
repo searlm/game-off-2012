@@ -55,6 +55,13 @@ package
 			if (Input.check(Key.UP)) { y -= offset; }
 			if (Input.check(Key.DOWN)) { y += offset; }	
 			
+			x = Math.max(x, 0);
+			x = Math.min(x, FP.screen.width - width);
+			
+			var myWorld:MyWorld = FP.world as MyWorld;
+			y = Math.max(y, 0);
+			y = Math.min(y, FP.screen.height - height - myWorld.BOTTOM_HUD_HEIGHT);
+			
 			if (bulletWait == 0 && bullets > 0 && Input.pressed(Key.SPACE)) {
 				var bullet:Bullet = new Bullet();
 				bullet.x = x + width / 2 - bullet.width / 2;

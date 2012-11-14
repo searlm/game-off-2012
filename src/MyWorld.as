@@ -10,6 +10,8 @@ package
 
 	public class MyWorld extends World
 	{
+		public const BOTTOM_HUD_HEIGHT:int = 32;
+		
 		private const HUD_LAYER:int = -1;
 		
 		private var ticksUntilHostSpawn:uint = 0;
@@ -83,9 +85,9 @@ package
 		{
 			var ground:Entity = new Entity;
 			ground.layer = HUD_LAYER;
-			var groundImage:Image = new Image(new BitmapData(FP.screen.width, 32));
+			var groundImage:Image = new Image(new BitmapData(FP.screen.width, BOTTOM_HUD_HEIGHT));
 			ground.x = 0;
-			ground.y = FP.screen.height - 32;
+			ground.y = FP.screen.height - BOTTOM_HUD_HEIGHT;
 			groundImage.color = 0xbfb997;
 			ground.graphic = groundImage;
 			add(ground);
