@@ -14,12 +14,12 @@ package
 		private static const LAYER:int = 100;
 		
 		//[Embed(source='assets/invader.png')] private const PLAYER:Class;
-		[Embed(source='assets/pickup.mp3')] private const PICKUP:Class;
+		//[Embed(source='assets/pickup.mp3')] private const PICKUP:Class;
 		
 		public var bullets:uint;
 		
 		private var speed:Number = 6;
-		private var pickupSound:Sfx = new Sfx(PICKUP);
+		//private var pickupSound:Sfx = new Sfx(PICKUP);
 		private var playerImage:Image;
 		
 		private var bulletWait:uint = 0;
@@ -44,7 +44,7 @@ package
 			
 			var p:Powerup = collide("powerup", x, y) as Powerup;
 			if (p) {
-				pickupSound.play();
+				//pickupSound.play();
 				bullets++;
 				p.destroy();
 			}
