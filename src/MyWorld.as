@@ -14,7 +14,7 @@ package
 		
 		private var ticksUntilHostSpawn:uint = 0;
 		private var nextHostSpawnSector:int = -1;
-		private var ticksUntilEnemySpawn:uint = 72;
+		private var ticksUntilEnemySpawn:uint = 150;
 		private var nextEnemySpawnSector:int = -1;
 		
 		private var player:Player;
