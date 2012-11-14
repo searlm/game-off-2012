@@ -32,7 +32,8 @@ package
 			initPlayer();
 		}
 		
-		override public function update():void {
+		override public function update():void 
+		{	
 			bulletText.text = "" + player.bullets;
 			
 			if (ticksUntilHostSpawn <= 0) {
@@ -81,6 +82,9 @@ package
 			super.update();
 		}
 		
+		/**
+		 * Add a simple rect to the bottom of the screen.
+		 */ 
 		private function initGround():void
 		{
 			var ground:Entity = new Entity;

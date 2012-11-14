@@ -25,7 +25,8 @@ package
 			type = "bullet";
 		}
 		
-		override public function update():void {
+		override public function update():void 
+		{
 			if (y < height) {
 				FP.world.remove(this);
 			}
