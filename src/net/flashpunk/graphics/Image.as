@@ -6,7 +6,7 @@ package net.flashpunk.graphics
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-
+	
 	import net.flashpunk.*;
 
 	/**
@@ -194,6 +194,16 @@ package net.flashpunk.graphics
 		public function clear():void
 		{
 			_buffer.fillRect(_bufferRect, 0);
+		}
+		
+		/**
+		 * This Image's raw BitmapData.
+		 * 
+		 * [Added for generating pixel masks for accurate sprite collision.]
+		 */
+		public function get buffer():BitmapData
+		{
+			return _buffer;	
 		}
 		
 		/**
