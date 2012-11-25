@@ -18,6 +18,8 @@ package
 		
 		private static const HUD_LAYER:int = -1;
 		
+		private var ticksUntilCloneHostSpawn:uint = 140;
+		private var nextCloneHostSpawnSector:int = -1;
 		private var ticksUntilAmmoHostSpawn:uint = 0;
 		private var nextAmmoHostSpawnSector:int = -1;
 		private var ticksUntilEnemySpawn:uint = 150;
@@ -69,24 +71,45 @@ package
 			bulletText.text = "" + player.bullets;
 			
 			if (ticksUntilAmmoHostSpawn <= 0) {
-				var h:AmmoHost = new AmmoHost;
-				var i:int = (nextAmmoHostSpawnSector < 0) ? Math.random() * 8 : nextAmmoHostSpawnSector;
+				var ammoHost:AmmoHost = new AmmoHost;
+				var i1:int = (nextAmmoHostSpawnSector < 0) ? Math.random() * 8 : nextAmmoHostSpawnSector;
 				
 				// choose the next slot, just don't allow it to be the same as the last one
-				var j:int = i;
-				while (j == i) {
-					j = Math.random() * 8;
+				var j1:int = i1;
+				while (j1 == i1) {
+					j1 = Math.random() * 8;
 				}
-				nextAmmoHostSpawnSector = j;
+				nextAmmoHostSpawnSector = j1;
 				
-				h.x = 16 + nextAmmoHostSpawnSector * ((FP.screen.width - 32) / 8);
-				h.y = -(h.height);
-				add(h);				
+				ammoHost.x = 16 + nextAmmoHostSpawnSector * ((FP.screen.width - 32) / 8);
+				ammoHost.y = -(ammoHost.height);
+				add(ammoHost);				
 				
 				ticksUntilAmmoHostSpawn = 160;
 			}
 			else {
 				ticksUntilAmmoHostSpawn--;
+			}
+			
+			if (ticksUntilCloneHostSpawn <= 0) {
+				var cloneHost:CloneHost = new CloneHost;
+				var i2:int = (nextCloneHostSpawnSector < 0) ? Math.random() * 5 : nextCloneHostSpawnSector;
+				
+				// choose the next slot, just don't allow it to be the same as the last one
+				var j2:int = i2;
+				while (j2 == i2) {
+					j2 = Math.random() * 5;
+				}
+				nextCloneHostSpawnSector = j2;
+				
+				cloneHost.x = 16 + nextCloneHostSpawnSector * ((FP.screen.width - 32) / 5);
+				cloneHost.y = -(cloneHost.height);
+				add(cloneHost);				
+				
+				ticksUntilCloneHostSpawn = 120;
+			}
+			else {
+				ticksUntilCloneHostSpawn--;
 			}
 			
 			if (ticksUntilEnemySpawn <= 0) {
