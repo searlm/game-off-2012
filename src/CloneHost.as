@@ -96,8 +96,8 @@ package
 		}
 		
 		private function spillClones():void
-		{
-			// TODO update the clone stats (filling the human outline, etc.)
+		{		
+			(FP.world as MyWorld).addClone();
 		}
 		
 		public function destroy():void 

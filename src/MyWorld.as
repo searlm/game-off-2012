@@ -17,10 +17,12 @@ package
 		
 		public var player:Player;
 		
-		private static const HUD_LAYER:int = -1;
+		private static const HUD_LAYER:int = -1;		
+		private static const GOAL:uint = 100;
 		
 		[Embed(source='assets/human_outline.png')] private const HUMAN_OUTLINE:Class;
 		
+		private var clones:uint = 0;
 		private var ticksUntilCloneHostSpawn:uint = 90;
 		private var nextCloneHostSpawnSector:int = -1;
 		private var ticksUntilAmmoHostSpawn:uint = 0;
@@ -29,8 +31,10 @@ package
 		private var nextEnemySpawnSector:int = -1;
 		
 		private var bulletText:Text = new Text("0");
+		private var progressChart:HumanOutline;
 		
 		private var deathSequence:Boolean = false;
+		private var winSequence:Boolean = false;
 		
 		public function MyWorld()
 		{
@@ -59,8 +63,44 @@ package
 			add(textEntity);
 		}
 		
+		public function addClone():void
+		{
+			clones += 2;
+			progressChart.progress = (clones / GOAL) * 100;
+			
+			if (clones >= GOAL) {
+				startWinSequence();
+			}
+		}
+		
+		private function startWinSequence():void
+		{
+			winSequence = true;
+			
+			var directionsText:Text = new Text("YOU WIN");			
+			directionsText.color = 0xfafafa;
+			directionsText.size = 24;
+			
+			var textEntity:Entity = new Entity();
+			textEntity.graphic = directionsText;
+			textEntity.x = FP.screen.width / 2 - directionsText.width / 2;
+			textEntity.y = FP.screen.height - 64;
+			textEntity.layer = HUD_LAYER;
+			add(textEntity);
+		}
+		
 		override public function update():void 
 		{	
+			if (winSequence) {				
+				if (Input.pressed(Key.SPACE)) {
+					FP.world = new MyWorld;
+					return;
+				}
+				
+				//super.update();
+				return;
+			}
+			
 			if (deathSequence) {				
 				if (Input.pressed(Key.SPACE)) {
 					FP.world = new MyWorld;
@@ -172,13 +212,7 @@ package
 		private function initHUD():void 
 		{
 			// show the completion chart (human outline) on the right
-			var humanOutline:Image = new Image(HUMAN_OUTLINE);
-			var humanOutlineEntity:Entity = new Entity;
-			humanOutlineEntity.layer = HUD_LAYER;
-			humanOutlineEntity.graphic = humanOutline;
-			humanOutlineEntity.x = FP.screen.width - humanOutline.width - 8;
-			humanOutlineEntity.y = FP.screen.height - humanOutline.height - BOTTOM_HUD_HEIGHT - 8;
-			add(humanOutlineEntity);
+			progressChart = new HumanOutline(this, FP.screen.width - 65 - 8, FP.screen.height - 120 - BOTTOM_HUD_HEIGHT - 8);  
 			
 			// show the ammo count at the bottom of the screen
 			var bulletPreamble:Text = new Text("AMMO:");
