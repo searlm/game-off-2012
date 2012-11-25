@@ -1,6 +1,7 @@
 package
 {
 	import flash.display.BitmapData;
+	import flash.sensors.Accelerometer;
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
@@ -18,7 +19,9 @@ package
 		
 		private static const HUD_LAYER:int = -1;
 		
-		private var ticksUntilCloneHostSpawn:uint = 140;
+		[Embed(source='assets/human_outline.png')] private const HUMAN_OUTLINE:Class;
+		
+		private var ticksUntilCloneHostSpawn:uint = 90;
 		private var nextCloneHostSpawnSector:int = -1;
 		private var ticksUntilAmmoHostSpawn:uint = 0;
 		private var nextAmmoHostSpawnSector:int = -1;
@@ -36,7 +39,7 @@ package
 			FP.screen.color = 0x2b2b2b;
 			
 			initGround();
-			initBulletHUD();
+			initHUD();
 			initPlayer();
 		}
 		
@@ -72,20 +75,20 @@ package
 			
 			if (ticksUntilAmmoHostSpawn <= 0) {
 				var ammoHost:AmmoHost = new AmmoHost;
-				var i1:int = (nextAmmoHostSpawnSector < 0) ? Math.random() * 8 : nextAmmoHostSpawnSector;
+				var i1:int = (nextAmmoHostSpawnSector < 0) ? Math.random() * 6 : nextAmmoHostSpawnSector;
 				
 				// choose the next slot, just don't allow it to be the same as the last one
 				var j1:int = i1;
 				while (j1 == i1) {
-					j1 = Math.random() * 8;
+					j1 = Math.random() * 6;
 				}
 				nextAmmoHostSpawnSector = j1;
 				
-				ammoHost.x = 16 + nextAmmoHostSpawnSector * ((FP.screen.width - 32) / 8);
+				ammoHost.x = 16 + nextAmmoHostSpawnSector * ((FP.screen.width - 32) / 6);
 				ammoHost.y = -(ammoHost.height);
 				add(ammoHost);				
 				
-				ticksUntilAmmoHostSpawn = 160;
+				ticksUntilAmmoHostSpawn = 180;
 			}
 			else {
 				ticksUntilAmmoHostSpawn--;
@@ -106,7 +109,7 @@ package
 				cloneHost.y = -(cloneHost.height);
 				add(cloneHost);				
 				
-				ticksUntilCloneHostSpawn = 120;
+				ticksUntilCloneHostSpawn = 360;
 			}
 			else {
 				ticksUntilCloneHostSpawn--;
@@ -114,16 +117,16 @@ package
 			
 			if (ticksUntilEnemySpawn <= 0) {
 				var e:Enemy = new Enemy;
-				var i2:int = (nextEnemySpawnSector < 0) ? Math.random() * 5 : nextEnemySpawnSector;
+				var i3:int = (nextEnemySpawnSector < 0) ? Math.random() * 5 : nextEnemySpawnSector;
 				
 				// choose the next slot, just don't allow it to be the same as the last one
-				var j2:int = i2;
-				while (j2 == i2) {
-					j2 = Math.random() * 5;
+				var j3:int = i3;
+				while (j3 == i3) {
+					j3 = Math.random() * 5;
 				}
-				nextEnemySpawnSector = j2;
+				nextEnemySpawnSector = j3;
 				
-				e.x = 16 + j2 * ((FP.screen.width - 32) / 5);
+				e.x = 16 + j3 * ((FP.screen.width - 32) / 5);
 				e.y = -(e.height);
 				
 				add(e);				
@@ -164,10 +167,20 @@ package
 		}
 		
 		/**
-		 * Show the ammo count in a static on-screen entity.
+		 * Create a simple HUD.
 		 */
-		private function initBulletHUD():void 
+		private function initHUD():void 
 		{
+			// show the completion chart (human outline) on the right
+			var humanOutline:Image = new Image(HUMAN_OUTLINE);
+			var humanOutlineEntity:Entity = new Entity;
+			humanOutlineEntity.layer = HUD_LAYER;
+			humanOutlineEntity.graphic = humanOutline;
+			humanOutlineEntity.x = FP.screen.width - humanOutline.width - 8;
+			humanOutlineEntity.y = FP.screen.height - humanOutline.height - BOTTOM_HUD_HEIGHT - 8;
+			add(humanOutlineEntity);
+			
+			// show the ammo count at the bottom of the screen
 			var bulletPreamble:Text = new Text("AMMO:");
 			bulletPreamble.color = 0x222222;
 			bulletPreamble.size = 18;
