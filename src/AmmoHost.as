@@ -8,13 +8,16 @@ package
 	import net.flashpunk.graphics.Emitter;
 	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Image;
+	import net.flashpunk.masks.Pixelmask;
 	import net.flashpunk.tweens.misc.ColorTween;
 	import net.flashpunk.utils.Ease;
 
-	public class Host extends Entity
+	public class AmmoHost extends Entity
 	{
 		private static const LAYER:int = 50;
 		private static const RUPTURE_TIME:Number = 1.5; // seconds to rupture
+		
+		[Embed(source='assets/ammo_host_96x128.png')] private const HOST:Class;
 		
 		private var hostImage:Image;
 		private var explosionEmitter:Emitter;
@@ -23,13 +26,14 @@ package
 		private var ticks:uint = 1;
 		private var collisionTween:ColorTween = new ColorTween();
 		
-		public function Host()
+		public function AmmoHost()
 		{
-			collisionTween.tween(RUPTURE_TIME, 0x002635, 0xd97925);
+			collisionTween.tween(RUPTURE_TIME, 0xffffff, 0x44ff44);
 			
-			hostImage = new Image(new BitmapData(64, 128));
-			hostImage.color = 0x0002635;
-			hostImage.alpha = 0.8;
+			hostImage = new Image(HOST);	
+			hostImage.color = 0xffffff;
+			hostImage.alpha = 0.9;
+			mask = new Pixelmask(hostImage.buffer);
 			
 			explosionEmitter = new Emitter(new BitmapData(12, 16), 4, 7);
 			explosionEmitter.newType("explosion", [0]); 
@@ -40,7 +44,6 @@ package
 			
 			graphic = new Graphiclist(hostImage, explosionEmitter);
 			
-			setHitbox(64, 128);
 			layer = LAYER;
 			type = "host";
 		}
@@ -75,7 +78,7 @@ package
 						removeTween(collisionTween);
 					}
 					else {
-						hostImage.color = 0x013440;
+						hostImage.color = 0xffffff;
 					}
 					
 					collisionTime = -1;					

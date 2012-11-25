@@ -8,6 +8,7 @@ package
 	import net.flashpunk.graphics.Emitter;
 	import net.flashpunk.graphics.Graphiclist;
 	import net.flashpunk.graphics.Image;
+	import net.flashpunk.masks.Pixelmask;
 	import net.flashpunk.tweens.misc.ColorTween;
 	import net.flashpunk.utils.Ease;
 
@@ -15,14 +16,16 @@ package
 	{
 		private static const LAYER:int = 100;
 		
+		[Embed(source='assets/bad_dude_64x64.png')] private const BAD_DUDE:Class;
+		
 		private var enemyImage:Image;
 		private var explosionEmitter:Emitter;
-		private var pinnedToBottom:Boolean = false;
 		
 		public function Enemy()
 		{
-			enemyImage = new Image(new BitmapData(64, 48));
-			enemyImage.color = 0xab1a25;			
+			enemyImage = new Image(BAD_DUDE);			
+			
+			mask = new Pixelmask(enemyImage.buffer);
 			
 			explosionEmitter = new Emitter(new BitmapData(4, 4), 4, 4);
 			explosionEmitter.newType("explosion", [0]); 
@@ -33,15 +36,33 @@ package
 			
 			graphic = new Graphiclist(enemyImage, explosionEmitter);
 			
-			setHitbox(64, 48);
 			layer = LAYER;
 			type = "enemy";
 		}
 		
 		override public function update():void
 		{
-			if (!pinnedToBottom) {
-				y = Math.min(y + 2, FP.screen.height - height - 32);	
+			var world:MyWorld = FP.world as MyWorld;
+			if (centerX < world.player.centerX) {
+				if (!collide("enemy", x+1, y)) {
+					x++;	
+				}
+			}
+			else if (centerX > world.player.centerX) {
+				if (!collide("enemy", x-1, y)) {
+					x--;	
+				}
+			}
+			
+			if (centerY < world.player.centerY) {
+				if (!collide("enemy", x, y+1)) {
+					y++;	
+				}
+			}
+			else if (centerY > world.player.centerY) {
+				if (!collide("enemy", x, y-1)) {
+					y--;	
+				}
 			}
 			
 			if (collidable) {
@@ -56,24 +77,12 @@ package
 						myWorld.startDeathSequence();
 						return;
 					}
-					
-					var otherEnemy:Enemy = collide("enemy", x, y + 1) as Enemy;
-					if (otherEnemy) {
-						// collided with another enemy -- this means we've reached the
-						// bottom of the screen, and need to pile on top of the other
-						// enemies stuck there			
-						pinnedToBottom = true;
-					}
 				}
 			} 
 			else {
-				if (!pinnedToBottom && explosionEmitter.particleCount == 0 && world != null) {
+				if (explosionEmitter.particleCount == 0 && world != null) {
 					world.remove(this);
 				}
-			}
-			
-			if (y == FP.screen.height - height - 32) {
-				pinnedToBottom = true;
 			}
 		}
 		

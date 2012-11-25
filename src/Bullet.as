@@ -11,16 +11,16 @@ package
 	{
 		private static const LAYER:int = 100;
 		
-		//[Embed(source='assets/pwrup.png')] private const POWERUP:Class;
+		[Embed(source='assets/bullet_17x17.png')] private const BULLET:Class;
+		
 		private var bulletImage:Image;
 		
 		public function Bullet()
 		{
-			bulletImage = new Image(new BitmapData(9, 9));
-			bulletImage.color = 0xd97925;
+			bulletImage = new Image(BULLET);
 			graphic = bulletImage;
 			
-			setHitbox(9, 9);
+			setHitbox(17, 17);
 			layer = LAYER;
 			type = "bullet";
 		}

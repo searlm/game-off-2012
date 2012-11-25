@@ -14,14 +14,15 @@ package
 	{
 		public const BOTTOM_HUD_HEIGHT:int = 32;
 		
+		public var player:Player;
+		
 		private static const HUD_LAYER:int = -1;
 		
-		private var ticksUntilHostSpawn:uint = 0;
-		private var nextHostSpawnSector:int = -1;
+		private var ticksUntilAmmoHostSpawn:uint = 0;
+		private var nextAmmoHostSpawnSector:int = -1;
 		private var ticksUntilEnemySpawn:uint = 150;
 		private var nextEnemySpawnSector:int = -1;
 		
-		private var player:Player;
 		private var bulletText:Text = new Text("0");
 		
 		private var deathSequence:Boolean = false;
@@ -29,7 +30,8 @@ package
 		public function MyWorld()
 		{
 			// TODO figure out dat CSS (?)
-			FP.screen.color = 0xefe7be;
+			//FP.screen.color = 0xefe7be;
+			FP.screen.color = 0x2b2b2b;
 			
 			initGround();
 			initBulletHUD();
@@ -41,7 +43,7 @@ package
 			deathSequence = true;
 			
  			var directionsText:Text = new Text("press the spacebar to try again");			
-			directionsText.color = 0x222222;
+			directionsText.color = 0xfafafa;
 			directionsText.size = 24;
 			
 			var textEntity:Entity = new Entity();
@@ -66,44 +68,44 @@ package
 			
 			bulletText.text = "" + player.bullets;
 			
-			if (ticksUntilHostSpawn <= 0) {
-				var h:Host = new Host;
-				var i:int = (nextHostSpawnSector < 0) ? Math.random() * 8 : nextHostSpawnSector;
+			if (ticksUntilAmmoHostSpawn <= 0) {
+				var h:AmmoHost = new AmmoHost;
+				var i:int = (nextAmmoHostSpawnSector < 0) ? Math.random() * 8 : nextAmmoHostSpawnSector;
 				
 				// choose the next slot, just don't allow it to be the same as the last one
 				var j:int = i;
 				while (j == i) {
 					j = Math.random() * 8;
 				}
-				nextHostSpawnSector = j;
+				nextAmmoHostSpawnSector = j;
 				
-				h.x = 16 + nextHostSpawnSector * ((FP.screen.width - 32) / 8);
+				h.x = 16 + nextAmmoHostSpawnSector * ((FP.screen.width - 32) / 8);
 				h.y = -(h.height);
 				add(h);				
 				
-				ticksUntilHostSpawn = 140;
+				ticksUntilAmmoHostSpawn = 160;
 			}
 			else {
-				ticksUntilHostSpawn--;
+				ticksUntilAmmoHostSpawn--;
 			}
 			
 			if (ticksUntilEnemySpawn <= 0) {
 				var e:Enemy = new Enemy;
-				var i2:int = (nextEnemySpawnSector < 0) ? Math.random() * 10 : nextEnemySpawnSector;
+				var i2:int = (nextEnemySpawnSector < 0) ? Math.random() * 5 : nextEnemySpawnSector;
 				
 				// choose the next slot, just don't allow it to be the same as the last one
 				var j2:int = i2;
 				while (j2 == i2) {
-					j2 = Math.random() * 10;
+					j2 = Math.random() * 5;
 				}
 				nextEnemySpawnSector = j2;
 				
-				e.x = 16 + j2 * ((FP.screen.width - 32) / 10);
+				e.x = 16 + j2 * ((FP.screen.width - 32) / 5);
 				e.y = -(e.height);
 				
 				add(e);				
 				
-				ticksUntilEnemySpawn = 72;
+				ticksUntilEnemySpawn = 48;
 			}
 			else {
 				ticksUntilEnemySpawn--;

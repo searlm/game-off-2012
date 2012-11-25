@@ -10,16 +10,15 @@ package
 	{
 		private static const LAYER:int = 100;
 		
-		//[Embed(source='assets/pwrup.png')] private const POWERUP:Class;
+		[Embed(source='assets/bullet_17x17.png')] private const BULLET:Class;
 		private var powerupImage:Image;
 		
 		public function Powerup()
 		{
-			powerupImage = new Image(new BitmapData(8, 8));
-			powerupImage.color = 0xd97925;
+			powerupImage = new Image(BULLET);			
 			graphic = powerupImage;
 			
-			setHitbox(8, 8);
+			setHitbox(17, 17);
 			layer = LAYER;
 			type = "powerup";
 		}
