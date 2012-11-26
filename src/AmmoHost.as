@@ -42,7 +42,7 @@ package
 			explosionEmitter.relative = false;
 			
 			explosionEmitter.setAlpha("explosion", 1, 0);
-			explosionEmitter.setMotion("explosion", 0, 120, 1.0, 360, -100, -0.1, Ease.quadOut);
+			explosionEmitter.setMotion("explosion", 0, 40, 0.4, 360, -30, -0.05, Ease.quadOut);
 			
 			graphic = new Graphiclist(hostImage, explosionEmitter);
 			
@@ -95,32 +95,32 @@ package
 		private function spillClones():void
 		{
 			var p:Powerup = new Powerup();
-			p.x = x;
+			p.x = x + 20;
 			p.y = y;
 			FP.world.add(p);
 			
 			p = new Powerup();
-			p.x = x - 15;
+			p.x = x - 5;
 			p.y = y + height / 2;
 			FP.world.add(p);
 			
 			p = new Powerup();
-			p.x = x;
+			p.x = x + 20;
 			p.y = y + height;
 			FP.world.add(p);
 			
 			p = new Powerup();
-			p.x = x + width;
+			p.x = x + width - 20;
 			p.y = y + height;
 			FP.world.add(p);
 			
 			p = new Powerup();
-			p.x = x + width + 15;
+			p.x = x + width + 5;
 			p.y = y + height / 2;
 			FP.world.add(p);
 			
 			p = new Powerup();
-			p.x = x + width;
+			p.x = x + width - 20;
 			p.y = y;
 			FP.world.add(p);
 		}
@@ -128,7 +128,7 @@ package
 		public function destroy():void 
 		{
 			collidable = false;
-			for (var i:uint = 0; i < 30; i++) {
+			for (var i:uint = 0; i < 10; i++) {
 				explosionEmitter.emit("explosion", centerX, centerY);
 			}
 			
