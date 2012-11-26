@@ -23,7 +23,7 @@ package
 		[Embed(source='assets/human_outline.png')] private const HUMAN_OUTLINE:Class;
 		
 		private var clones:uint = 0;
-		private var ticksUntilCloneHostSpawn:uint = 90;
+		private var ticksUntilCloneHostSpawn:uint = 60;
 		private var nextCloneHostSpawnSector:int = -1;
 		private var ticksUntilAmmoHostSpawn:uint = 0;
 		private var nextAmmoHostSpawnSector:int = -1;
@@ -128,7 +128,7 @@ package
 				ammoHost.y = -(ammoHost.height);
 				add(ammoHost);				
 				
-				ticksUntilAmmoHostSpawn = 180;
+				ticksUntilAmmoHostSpawn = 120;
 			}
 			else {
 				ticksUntilAmmoHostSpawn--;
@@ -149,7 +149,7 @@ package
 				cloneHost.y = -(cloneHost.height);
 				add(cloneHost);				
 				
-				ticksUntilCloneHostSpawn = 360;
+				ticksUntilCloneHostSpawn = 240;
 			}
 			else {
 				ticksUntilCloneHostSpawn--;
