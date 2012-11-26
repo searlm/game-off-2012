@@ -18,6 +18,7 @@ package
 		private static const RUPTURE_TIME:Number = 1.5; // seconds to rupture
 		
 		[Embed(source='assets/ammo_host_96x128.png')] private const HOST:Class;
+		[Embed(source='assets/bullet_17x17.png')] private const BULLET:Class;
 		
 		private var hostImage:Image;
 		private var explosionEmitter:Emitter;
@@ -28,19 +29,20 @@ package
 		
 		public function AmmoHost()
 		{
-			collisionTween.tween(RUPTURE_TIME, 0xffffff, 0x44ff44);
+			collisionTween.tween(RUPTURE_TIME, 0xffffff, 0x888888);
 			
 			hostImage = new Image(HOST);	
 			hostImage.color = 0xffffff;
 			hostImage.alpha = 0.9;
 			mask = new Pixelmask(hostImage.buffer);
 			
-			explosionEmitter = new Emitter(new BitmapData(12, 16), 4, 7);
+			var bulletImage:Image = new Image(BULLET);
+			explosionEmitter = new Emitter(bulletImage.buffer, 17, 17);
 			explosionEmitter.newType("explosion", [0]); 
 			explosionEmitter.relative = false;
 			
 			explosionEmitter.setAlpha("explosion", 1, 0);
-			explosionEmitter.setMotion("explosion", 0, 100, 2.25, 360, -70, -0.5, Ease.quadOut);
+			explosionEmitter.setMotion("explosion", 0, 120, 1.0, 360, -100, -0.1, Ease.quadOut);
 			
 			graphic = new Graphiclist(hostImage, explosionEmitter);
 			
@@ -53,12 +55,7 @@ package
 			y += 2;
 			
 			if (collidable) {
-				var bullet:Bullet = collide("bullet", x, y) as Bullet;
-				if (bullet) {
-					bullet.destroy();
-					destroy();
-				}
-				else if (collide("player", x, y)) {
+				if (collide("player", x, y)) {
 					if (collisionTime < 0) {
 						collisionTime = 0;	
 						addTween(collisionTween);
@@ -131,7 +128,7 @@ package
 		public function destroy():void 
 		{
 			collidable = false;
-			for (var i:uint = 0; i < 75; i++) {
+			for (var i:uint = 0; i < 30; i++) {
 				explosionEmitter.emit("explosion", centerX, centerY);
 			}
 			

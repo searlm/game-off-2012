@@ -18,6 +18,7 @@ package
 		private static const RUPTURE_TIME:Number = 1.5; // seconds to rupture
 		
 		[Embed(source='assets/clone_host_128x126.png')] private const HOST:Class;
+		[Embed(source='assets/hero_clone_16x18.png')] private const CLONE:Class;
 		
 		private var hostImage:Image;
 		private var explosionEmitter:Emitter;
@@ -28,19 +29,20 @@ package
 		
 		public function CloneHost()
 		{
-			collisionTween.tween(RUPTURE_TIME, 0xffffff, 0x44ff44);
+			collisionTween.tween(RUPTURE_TIME, 0xffffff, 0x888888);
 			
 			hostImage = new Image(HOST);	
 			hostImage.color = 0xffffff;
 			hostImage.alpha = 0.9;
 			mask = new Pixelmask(hostImage.buffer);
 			
-			explosionEmitter = new Emitter(new BitmapData(12, 16), 4, 7);
+			var cloneImage:Image = new Image(CLONE);
+			explosionEmitter = new Emitter(cloneImage.buffer, 16, 18);
 			explosionEmitter.newType("explosion", [0]); 
 			explosionEmitter.relative = false;
 			
 			explosionEmitter.setAlpha("explosion", 1, 0);
-			explosionEmitter.setMotion("explosion", 0, 100, 2.25, 360, -70, -0.5, Ease.quadOut);
+			explosionEmitter.setMotion("explosion", 0, 320, 2.25, 360, -100, -0.5, Ease.quadOut);
 			
 			graphic = new Graphiclist(hostImage, explosionEmitter);
 			
@@ -53,12 +55,7 @@ package
 			y += 2;
 			
 			if (collidable) {
-				var bullet:Bullet = collide("bullet", x, y) as Bullet;
-				if (bullet) {
-					bullet.destroy();
-					destroy();
-				}
-				else if (collide("player", x, y)) {
+				if (collide("player", x, y)) {
 					if (collisionTime < 0) {
 						collisionTime = 0;	
 						addTween(collisionTween);
