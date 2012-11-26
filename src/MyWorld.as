@@ -30,16 +30,25 @@ package
 		private var ticksUntilEnemySpawn:uint = 150;
 		private var nextEnemySpawnSector:int = -1;
 		
+		// if you play the game long enough to overflow a uint, you deserve whatever
+		// awesomeness happens as a result
+		private var totalTicks:uint = 0;
+		
 		private var bulletText:Text = new Text("0");
 		private var progressChart:HumanOutline;
 		
 		private var deathSequence:Boolean = false;
 		private var winSequence:Boolean = false;
 		
+		private var ammoSpawnTimes:Array = [120, 140, 150, 150];
+		private var enemySpawnTimes:Array = [45, 40, 35, 30];
+		
+		private var difficulty:uint = 0;		
+		private var difficultyTicksRemaining:uint = 30 * 60;
+		
 		public function MyWorld()
 		{
 			// TODO figure out dat CSS (?)
-			//FP.screen.color = 0xefe7be;
 			FP.screen.color = 0x2b2b2b;
 			
 			initGround();
@@ -91,6 +100,13 @@ package
 		
 		override public function update():void 
 		{	
+			totalTicks++;
+			
+			if (difficulty < enemySpawnTimes.length - 1 && difficultyTicksRemaining-- <= 0) {
+				difficulty++;
+				difficultyTicksRemaining = 30 * 30;
+			}
+			
 			if (winSequence) {				
 				if (Input.pressed(Key.SPACE)) {
 					FP.world = new MyWorld;
@@ -128,7 +144,7 @@ package
 				ammoHost.y = -(ammoHost.height);
 				add(ammoHost);				
 				
-				ticksUntilAmmoHostSpawn = 120;
+				ticksUntilAmmoHostSpawn = ammoSpawnTimes[difficulty];
 			}
 			else {
 				ticksUntilAmmoHostSpawn--;
@@ -169,9 +185,9 @@ package
 				e.x = 16 + j3 * ((FP.screen.width - 32) / 5);
 				e.y = -(e.height);
 				
-				add(e);				
+				add(e);
 				
-				ticksUntilEnemySpawn = 48;
+				ticksUntilEnemySpawn = enemySpawnTimes[difficulty];
 			}
 			else {
 				ticksUntilEnemySpawn--;
