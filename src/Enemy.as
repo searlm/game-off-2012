@@ -43,25 +43,29 @@ package
 		override public function update():void
 		{
 			var world:MyWorld = FP.world as MyWorld;
-			if (centerX < world.player.centerX) {
-				if (!collide("enemy", x+1, y)) {
-					x++;	
+			if (Math.abs(centerX - world.player.centerX) > 3) {				
+				if (centerX < world.player.centerX) {
+					if (!collide("enemy", x+1, y)) {
+						x++;	
+					}
 				}
-			}
-			else if (centerX > world.player.centerX) {
-				if (!collide("enemy", x-1, y)) {
-					x--;	
+				else if (centerX > world.player.centerX) {
+					if (!collide("enemy", x-1, y)) {
+						x--;	
+					}
 				}
 			}
 			
-			if (centerY < world.player.centerY) {
-				if (!collide("enemy", x, y+1)) {
-					y++;	
+			if (Math.abs(centerY - world.player.centerY) > 3) {				
+				if (centerY < world.player.centerY) {
+					if (!collide("enemy", x, y+1)) {
+						y++;	
+					}
 				}
-			}
-			else if (centerY > world.player.centerY) {
-				if (!collide("enemy", x, y-1)) {
-					y--;	
+				else if (centerY > world.player.centerY) {
+					if (!collide("enemy", x, y-1)) {
+						y--;	
+					}
 				}
 			}
 			
