@@ -40,7 +40,7 @@ package
 		private var deathSequence:Boolean = false;
 		private var winSequence:Boolean = false;
 		
-		private var ammoSpawnTimes:Array = [120, 140, 150, 150];
+		private var ammoSpawnTimes:Array = [120, 120, 150, 150];
 		private var enemySpawnTimes:Array = [45, 40, 35, 30];
 		
 		private var difficulty:uint = 0;		
