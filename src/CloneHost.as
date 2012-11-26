@@ -42,7 +42,7 @@ package
 			explosionEmitter.relative = false;
 			
 			explosionEmitter.setAlpha("explosion", 1, 0);
-			explosionEmitter.setMotion("explosion", 0, 320, 2.25, 360, -100, -0.5, Ease.quadOut);
+			explosionEmitter.setMotion("explosion", 0, 320, 3, 360, -100, -0.5, Ease.quadOut);
 			
 			graphic = new Graphiclist(hostImage, explosionEmitter);
 			
