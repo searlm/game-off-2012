@@ -14,33 +14,45 @@ package
 	{
 		public const BOTTOM_HUD_HEIGHT:int = 32;
 		
-		private var mainText:Text = new Text("CLEVER TITLE");
-		private var subText:Text = new Text("[WRT CLONING]");
+		[Embed(source='assets/hero_400x439.png')] 
+		private const HERO:Class;
+		
+		[Embed(source = 'assets/Blackout Midnight.ttf', embedAsCFF="false", fontFamily = 'Blackout Midnight')] 
+		private const MAIN_FONT:Class;
+		
+		private var mainText:Text = new Text("next big game");		
 		private var directionsText:Text = new Text("press the spacebar to begin");
 		private var copyrightText:Text = new Text("(C) Sam Martin, 2012");
 		
 		public function TitleScreen()
 		{
-			// TODO figure out dat CSS (?)
-			FP.screen.color = 0xefe7be;
+			// TODO figure out dat CSS (?)			
+			FP.screen.color = 0x2b2b2b;
 			
-			mainText.color = 0x666666;
-			mainText.size = 48;
-			addText(mainText, FP.screen.width / 2 - mainText.width / 2, FP.screen.height / 3);
+			var hero:Entity = new Entity;
+			hero.x = FP.screen.width - 400;
+			hero.y = 0;
 			
-			subText.color = 0x888888;
-			subText.size = 24;
-			addText(subText, FP.screen.width / 2 - subText.width / 2, FP.screen.height / 3 + 48);
+			var heroImage:Image = new Image(HERO);
+			heroImage.alpha = 0.3;
+			hero.graphic = heroImage;
 			
-			directionsText.color = 0xaaaaaa;
-			directionsText.size = 18;
-			addText(directionsText, FP.screen.width / 2 - directionsText.width / 2, FP.screen.height / 3 + 128);
+			add(hero);
 			
-			copyrightText.color = 0x444444;
+			mainText.color = 0xf9f9f9;
+			mainText.size = 56;
+			mainText.font = "Blackout Midnight";
+			addText(mainText, 32, FP.screen.height / 2);
+			
+			directionsText.color = 0xdddddd;
+			directionsText.size = 20;
+			directionsText.font = "Blackout Midnight";
+			addText(directionsText, 32, FP.screen.height / 2 + 64);
+			
+			copyrightText.color = 0x999999;
 			copyrightText.size = 18;
-			addText(copyrightText, 16, FP.screen.height - copyrightText.height - 4);
-			
-			initGround();
+			copyrightText.font = "Blackout Midnight";
+			addText(copyrightText, FP.screen.width - copyrightText.width - 4, FP.screen.height - copyrightText.height - 4);			
 		}
 		
 		private function addText(text:Text, x:int, y:int):void
@@ -59,21 +71,6 @@ package
 			}
 			
 			super.update();
-		}
-		
-		/**
-		 * Add a simple rect to the bottom of the screen.
-		 */ 
-		private function initGround():void
-		{
-			var ground:Entity = new Entity;
-			ground.layer = 1;
-			var groundImage:Image = new Image(new BitmapData(FP.screen.width, BOTTOM_HUD_HEIGHT));
-			ground.x = 0;
-			ground.y = FP.screen.height - BOTTOM_HUD_HEIGHT;
-			groundImage.color = 0xbfb997;
-			ground.graphic = groundImage;
-			add(ground);
 		}
 	}
 }

@@ -13,14 +13,16 @@ package
 
 	public class MyWorld extends World
 	{
-		public const BOTTOM_HUD_HEIGHT:int = 32;
-		
 		public var player:Player;
 		
 		private static const HUD_LAYER:int = -1;		
 		private static const GOAL:uint = 100;
 		
-		[Embed(source='assets/human_outline.png')] private const HUMAN_OUTLINE:Class;
+		[Embed(source='assets/human_outline.png')] 
+		private const HUMAN_OUTLINE:Class;		
+		
+		[Embed(source = 'assets/LeagueGothic-Regular.otf', embedAsCFF="false", fontFamily = 'MainFont')] 
+		private const MAIN_FONT:Class;
 		
 		private var clones:uint = 0;
 		private var ticksUntilCloneHostSpawn:uint = 60;
@@ -51,7 +53,6 @@ package
 			// TODO figure out dat CSS (?)
 			FP.screen.color = 0x2b2b2b;
 			
-			initGround();
 			initHUD();
 			initPlayer();
 		}
@@ -74,7 +75,7 @@ package
 		
 		public function addClone():void
 		{
-			clones += 2;
+			clones += 4;
 			progressChart.progress = (clones / GOAL) * 100;
 			
 			if (clones >= GOAL) {
@@ -197,21 +198,6 @@ package
 		}
 		
 		/**
-		 * Add a simple rect to the bottom of the screen.
-		 */ 
-		private function initGround():void
-		{
-			var ground:Entity = new Entity;
-			ground.layer = HUD_LAYER;
-			var groundImage:Image = new Image(new BitmapData(FP.screen.width, BOTTOM_HUD_HEIGHT));
-			ground.x = 0;
-			ground.y = FP.screen.height - BOTTOM_HUD_HEIGHT;
-			groundImage.color = 0xbfb997;
-			ground.graphic = groundImage;
-			add(ground);
-		}
-		
-		/**
 		 * Start in the middle of the world.
 		 */
 		private function initPlayer():void
@@ -228,29 +214,31 @@ package
 		private function initHUD():void 
 		{
 			// show the completion chart (human outline) on the right
-			progressChart = new HumanOutline(this, FP.screen.width - 65 - 8, FP.screen.height - 120 - BOTTOM_HUD_HEIGHT - 8);  
+			progressChart = new HumanOutline(this, FP.screen.width - 65 - 8, FP.screen.height - 120 - 8);  
 			
 			// show the ammo count at the bottom of the screen
 			var bulletPreamble:Text = new Text("AMMO:");
-			bulletPreamble.color = 0x222222;
-			bulletPreamble.size = 18;
+			bulletPreamble.font = "MainFont";
+			bulletPreamble.color = 0xffffff;
+			bulletPreamble.size = 24;
 			
 			// TODO is Entity the right way to do this?
 			var bulletPreambleEntity:Entity = new Entity();
-			bulletPreambleEntity.layer = HUD_LAYER;
+			bulletPreambleEntity.layer = 9999;
 			bulletPreambleEntity.graphic = bulletPreamble;
-			bulletPreambleEntity.x = 16;
-			bulletPreambleEntity.y = FP.screen.height - 22;
+			bulletPreambleEntity.x = FP.screen.width - 200;
+			bulletPreambleEntity.y = FP.screen.height - 24 - 10;
 			add(bulletPreambleEntity);
 			
-			bulletText.color = 0xab1a25;
-			bulletText.size = 32;			
+			bulletText.font = "MainFont";
+			bulletText.color = 0xffffff;
+			bulletText.size = 42;			
 			
 			var bulletEntity:Entity = new Entity();
-			bulletEntity.layer = HUD_LAYER;
+			bulletEntity.layer = 9999;
 			bulletEntity.graphic = bulletText;
-			bulletEntity.x = 80;
-			bulletEntity.y = FP.screen.height - 32;
+			bulletEntity.x = bulletPreambleEntity.x + bulletPreamble.width + 8;
+			bulletEntity.y = FP.screen.height - 42 - 9;
 			add(bulletEntity);
 		}
 	}

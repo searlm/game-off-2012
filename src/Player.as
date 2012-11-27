@@ -78,7 +78,7 @@ package
 			
 			var myWorld:MyWorld = FP.world as MyWorld;
 			y = Math.max(y, 0);
-			y = Math.min(y, FP.screen.height - height - myWorld.BOTTOM_HUD_HEIGHT);
+			y = Math.min(y, FP.screen.height - height);
 			
 			if (bulletWait == 0 && bullets > 0 && Input.pressed(Key.SPACE)) {
 				var bullet:Bullet = new Bullet();

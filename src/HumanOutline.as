@@ -34,12 +34,14 @@ package
 			progressBar.layer = LAYER + 1; // behind the outline graphic
 			progressBar.x = x;
 			progressBar.y = y + 116;
-			
+						
+			percentText.font = "MainFont"; // embedded in MyWorld.as
 			percentText.color = 0xfafafa;
-			percentText.size = 15;
+			percentText.size = 28;
 			
 		    percentTextEntity = new Entity;			
 			percentTextEntity.graphic = percentText;
+			percentTextEntity.layer = LAYER;
 			percentTextEntity.x = outline.x + 2 + 65 / 2 - percentText.width / 2;
 			percentTextEntity.y = outline.y + 60 - percentText.height / 2;
 			
