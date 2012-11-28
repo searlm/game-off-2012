@@ -1,5 +1,6 @@
 package
 {
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.sensors.Accelerometer;
 	
@@ -39,7 +40,9 @@ package
 		private var bulletText:Text = new Text("0");
 		private var progressChart:HumanOutline;
 		
-		private var deathSequence:Boolean = false;
+		private var sequenceTicksRemaining:int;
+		private var sequenceOverlay:Image;
+		private var deathSequence:Boolean = false;		
 		private var winSequence:Boolean = false;
 		
 		private var ammoSpawnTimes:Array = [120, 120, 150, 150];
@@ -61,16 +64,46 @@ package
 		{
 			deathSequence = true;
 			
- 			var directionsText:Text = new Text("press the spacebar to try again");			
-			directionsText.color = 0xfafafa;
+			player.layer = HUD_LAYER;	
+			
+			var overlayBitmap:BitmapData = new BitmapData(FP.screen.width, FP.screen.height, false, 0x2b2b2b); 
+			sequenceOverlay = new Image(overlayBitmap);
+			sequenceOverlay.alpha = 0;
+			var overlayEntity:Entity = new Entity;
+			overlayEntity.graphic = sequenceOverlay;
+			overlayEntity.layer = 1;		
+			overlayEntity.x = 0;
+			overlayEntity.y = 0;
+			add(overlayEntity);
+			
+			sequenceTicksRemaining = 90;
+		}
+		
+		private function endDeathSequence():void
+		{	
+			var directionsText:Text = new Text("press the spacebar to try again");		
+			directionsText.font = "Blackout Midnight";
+			directionsText.color = 0xdddddd;
 			directionsText.size = 24;
 			
-			var textEntity:Entity = new Entity();
-			textEntity.graphic = directionsText;
-			textEntity.x = FP.screen.width / 2 - directionsText.width / 2;
-			textEntity.y = FP.screen.height - 64;
-			textEntity.layer = HUD_LAYER;
-			add(textEntity);
+			var directionsEntity:Entity = new Entity();
+			directionsEntity.graphic = directionsText;
+			directionsEntity.x = 96;
+			directionsEntity.y = FP.screen.height - 96;
+			directionsEntity.layer = HUD_LAYER;
+			add(directionsEntity);
+			
+			var mainText:Text = new Text("You lose");		
+			mainText.font = "Blackout Midnight";
+			mainText.color = 0xffffff;
+			mainText.size = 72;
+			
+			var mainEntity:Entity = new Entity();
+			mainEntity.graphic = mainText;
+			mainEntity.x = 96;
+			mainEntity.y = FP.screen.height - 96 - 24 - 72;
+			mainEntity.layer = HUD_LAYER;
+			add(mainEntity);			
 		}
 		
 		public function addClone():void
@@ -89,12 +122,12 @@ package
 			
 			var directionsText:Text = new Text("YOU WIN");			
 			directionsText.color = 0xfafafa;
-			directionsText.size = 24;
+			directionsText.size = 48;
 			
 			var textEntity:Entity = new Entity();
 			textEntity.graphic = directionsText;
 			textEntity.x = FP.screen.width / 2 - directionsText.width / 2;
-			textEntity.y = FP.screen.height - 64;
+			textEntity.y = FP.screen.height - 72;
 			textEntity.layer = HUD_LAYER;
 			add(textEntity);
 		}
@@ -118,10 +151,20 @@ package
 				return;
 			}
 			
-			if (deathSequence) {				
-				if (Input.pressed(Key.SPACE)) {
-					FP.world = new MyWorld;
-					return;
+			if (deathSequence) {
+				if (sequenceTicksRemaining == 0) {
+					endDeathSequence();
+					sequenceTicksRemaining = -1;
+				}
+				else if (sequenceTicksRemaining == -1) {				
+					if (Input.pressed(Key.SPACE)) {
+						FP.world = new MyWorld;
+						return;
+					}
+				}
+				else {
+					sequenceOverlay.alpha = (90 - sequenceTicksRemaining) / 90;
+					sequenceTicksRemaining--;					
 				}
 				
 				//super.update();
