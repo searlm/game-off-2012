@@ -20,7 +20,7 @@ package
 		[Embed(source = 'assets/Blackout Midnight.ttf', embedAsCFF="false", fontFamily = 'Blackout Midnight')] 
 		private const MAIN_FONT:Class;
 		
-		private var mainText:Text = new Text("next big game");		
+		private var mainText:Text = new Text("infeckshun");		
 		private var directionsText:Text = new Text("press the spacebar to begin");
 		private var copyrightText:Text = new Text("(C) Sam Martin, 2012");
 		
