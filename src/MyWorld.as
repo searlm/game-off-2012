@@ -18,6 +18,7 @@ package
 		
 		private static const HUD_LAYER:int = -1;		
 		private static const GOAL:uint = 100;
+		private static const DEBUG:Boolean = true;
 		
 		[Embed(source='assets/human_outline.png')] 
 		private const HUMAN_OUTLINE:Class;		
@@ -50,6 +51,7 @@ package
 		
 		private var difficulty:uint = 0;		
 		private var difficultyTicksRemaining:uint = 30 * 60;
+		
 		
 		public function MyWorld()
 		{
@@ -132,11 +134,39 @@ package
 			add(textEntity);
 		}
 		
+		private function handleDebugInputs():void {		
+			if (DEBUG) {				
+				// suicide
+				if (Input.pressed(Key.S)) {
+					startDeathSequence();					
+				}
+				
+				// insta-win 
+				if (Input.pressed(Key.W)) {
+					startWinSequence();					
+				}
+				
+				// step down a difficulty level and stay awhile
+				if (Input.pressed(Key.J)) {
+					difficulty = Math.max(0, difficulty - 1);
+					difficultyTicksRemaining = int.MAX_VALUE;
+				}
+				
+				// bump up a difficulty level, and stay awhile
+				if (Input.pressed(Key.K)) {					
+					difficulty = Math.min(enemySpawnTimes.length - 1, difficulty + 1);
+					difficultyTicksRemaining = int.MAX_VALUE;
+				}				
+			}
+		}
+		
 		override public function update():void 
 		{	
 			totalTicks++;
 			
-			if (difficulty < enemySpawnTimes.length - 1 && difficultyTicksRemaining-- <= 0) {
+			handleDebugInputs();
+			
+			if (difficulty < enemySpawnTimes.length - 1 && difficultyTicksRemaining-- == 0) {
 				difficulty++;
 				difficultyTicksRemaining = 30 * 30;
 			}
@@ -174,70 +204,85 @@ package
 			bulletText.text = "" + player.bullets;
 			
 			if (ticksUntilAmmoHostSpawn <= 0) {
-				var ammoHost:AmmoHost = new AmmoHost;
-				var i1:int = (nextAmmoHostSpawnSector < 0) ? Math.random() * 6 : nextAmmoHostSpawnSector;
-				
-				// choose the next slot, just don't allow it to be the same as the last one
-				var j1:int = i1;
-				while (j1 == i1) {
-					j1 = Math.random() * 6;
-				}
-				nextAmmoHostSpawnSector = j1;
-				
-				ammoHost.x = 16 + nextAmmoHostSpawnSector * ((FP.screen.width - 32) / 6);
-				ammoHost.y = -(ammoHost.height);
-				add(ammoHost);				
-				
-				ticksUntilAmmoHostSpawn = ammoSpawnTimes[difficulty];
+				spawnAmmoHost();
 			}
 			else {
 				ticksUntilAmmoHostSpawn--;
 			}
 			
 			if (ticksUntilCloneHostSpawn <= 0) {
-				var cloneHost:CloneHost = new CloneHost;
-				var i2:int = (nextCloneHostSpawnSector < 0) ? Math.random() * 5 : nextCloneHostSpawnSector;
-				
-				// choose the next slot, just don't allow it to be the same as the last one
-				var j2:int = i2;
-				while (j2 == i2) {
-					j2 = Math.random() * 5;
-				}
-				nextCloneHostSpawnSector = j2;
-				
-				cloneHost.x = 16 + nextCloneHostSpawnSector * ((FP.screen.width - 32) / 5);
-				cloneHost.y = -(cloneHost.height);
-				add(cloneHost);				
-				
-				ticksUntilCloneHostSpawn = 240;
+				spawnCloneHost();
 			}
 			else {
 				ticksUntilCloneHostSpawn--;
 			}
 			
 			if (ticksUntilEnemySpawn <= 0) {
-				var e:Enemy = new Enemy;
-				var i3:int = (nextEnemySpawnSector < 0) ? Math.random() * 5 : nextEnemySpawnSector;
-				
-				// choose the next slot, just don't allow it to be the same as the last one
-				var j3:int = i3;
-				while (j3 == i3) {
-					j3 = Math.random() * 5;
-				}
-				nextEnemySpawnSector = j3;
-				
-				e.x = 16 + j3 * ((FP.screen.width - 32) / 5);
-				e.y = -(e.height);
-				
-				add(e);
-				
-				ticksUntilEnemySpawn = enemySpawnTimes[difficulty];
+				spawnEnemy();
 			}
 			else {
 				ticksUntilEnemySpawn--;
 			}
 			
 			super.update();
+		}
+		
+		private function spawnCloneHost():void
+		{
+			var cloneHost:CloneHost = new CloneHost;
+			var i2:int = (nextCloneHostSpawnSector < 0) ? Math.random() * 5 : nextCloneHostSpawnSector;
+			
+			// choose the next slot, just don't allow it to be the same as the last one
+			var j2:int = i2;
+			while (j2 == i2) {
+				j2 = Math.random() * 5;
+			}
+			nextCloneHostSpawnSector = j2;
+			
+			cloneHost.x = 16 + nextCloneHostSpawnSector * ((FP.screen.width - 32) / 5);
+			cloneHost.y = -(cloneHost.height);
+			add(cloneHost);				
+			
+			ticksUntilCloneHostSpawn = 240;
+		}
+		
+		private function spawnEnemy():void
+		{	
+			var e:Enemy = new Enemy;
+			var i3:int = (nextEnemySpawnSector < 0) ? Math.random() * 5 : nextEnemySpawnSector;
+			
+			// choose the next slot, just don't allow it to be the same as the last one
+			var j3:int = i3;
+			while (j3 == i3) {
+				j3 = Math.random() * 5;
+			}
+			nextEnemySpawnSector = j3;
+			
+			e.x = 16 + j3 * ((FP.screen.width - 32) / 5);
+			e.y = -(e.height);
+			
+			add(e);
+			
+			ticksUntilEnemySpawn = enemySpawnTimes[difficulty];
+		}
+		
+		private function spawnAmmoHost():void
+		{
+			var ammoHost:AmmoHost = new AmmoHost;
+			var i1:int = (nextAmmoHostSpawnSector < 0) ? Math.random() * 6 : nextAmmoHostSpawnSector;
+			
+			// choose the next slot, just don't allow it to be the same as the last one
+			var j1:int = i1;
+			while (j1 == i1) {
+				j1 = Math.random() * 6;
+			}
+			nextAmmoHostSpawnSector = j1;
+			
+			ammoHost.x = 16 + nextAmmoHostSpawnSector * ((FP.screen.width - 32) / 6);
+			ammoHost.y = -(ammoHost.height);
+			add(ammoHost);				
+			
+			ticksUntilAmmoHostSpawn = ammoSpawnTimes[difficulty];
 		}
 		
 		/**
