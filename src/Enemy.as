@@ -15,6 +15,7 @@ package
 	public class Enemy extends Entity
 	{
 		private static const LAYER:int = 100;
+		private static const MIN_Y_COORD:int = 8;
 		
 		[Embed(source='assets/bad_dude_64x64.png')] private const BAD_DUDE:Class;
 		
@@ -42,41 +43,18 @@ package
 		
 		override public function update():void
 		{
-			var world:MyWorld = FP.world as MyWorld;
-			if (Math.abs(centerX - world.player.centerX) > 3) {				
-				if (centerX < world.player.centerX) {
-					if (!collide("enemy", x+1, y)) {
-						x++;	
-					}
-				}
-				else if (centerX > world.player.centerX) {
-					if (!collide("enemy", x-1, y)) {
-						x--;	
-					}
-				}
-			}
-			
-			if (Math.abs(centerY - world.player.centerY) > 3) {				
-				if (centerY < world.player.centerY) {
-					if (!collide("enemy", x, y+1)) {
-						y++;	
-					}
-				}
-				else if (centerY > world.player.centerY) {
-					if (!collide("enemy", x, y-1)) {
-						y--;	
-					}
-				}
-			}
-			
 			if (collidable) {
 				var bullet:Bullet = collide("bullet", x, y) as Bullet;				
 				if (bullet) {
+					// noes! die with style
 					bullet.destroy();
+					(FP.world as MyWorld).enemyKills++;
 					destroy();
+					return;
 				}
 				else {
-					if (collide("player", x, y)) {						
+					if (collide("player", x, y)) {	
+						// mwahaha... exit to the death sequence
 						var myWorld:MyWorld = FP.world as MyWorld;
 						myWorld.startDeathSequence();
 						return;
@@ -88,16 +66,66 @@ package
 					world.remove(this);
 				}
 			}
+			
+			// if we're above the min height, just drop straight down to 
+			// clear space for more enemies to spawn at the top
+			if (y < MIN_Y_COORD) {
+				if (!collide("enemy", x, y+1)) {
+					y++;	
+				}
+				else {
+					if (y < -63) {
+						trace("[PILEUP] REMOVAL(" + x + ", " + y + ")");
+						destroy(false);					
+					}
+					else {
+						trace("[PILEUP] COLLIDE(" + x + ", " + y + ")");	
+					}
+				}
+			}
+			else {
+				var world:MyWorld = FP.world as MyWorld;
+				if (Math.abs(centerX - world.player.centerX) > 3) {				
+					if (centerX < world.player.centerX) {
+						if (!collide("enemy", x+1, y)) {
+							x++;	
+						}
+					}
+					else if (centerX > world.player.centerX) {
+						if (!collide("enemy", x-1, y)) {
+							x--;	
+						}
+					}
+				}
+				
+				if (Math.abs(centerY - world.player.centerY) > 3) {				
+					if (centerY < world.player.centerY) {
+						if (!collide("enemy", x, y+1)) {
+							y++;	
+						}
+					}
+					else if (y > MIN_Y_COORD && centerY > world.player.centerY) {
+						if (!collide("enemy", x, y-1)) {
+							y--;	
+						}
+					}
+				}
+			}
 		}
 		
-		public function destroy():void 
+		public function destroy(withExplosion:Boolean=true):void 
 		{
-			collidable = false;
-			for (var i:uint = 0; i < 100; i++) {
-				explosionEmitter.emit("explosion", centerX, centerY);
+			if (withExplosion) {				
+				collidable = false;
+				for (var i:uint = 0; i < 100; i++) {
+					explosionEmitter.emit("explosion", centerX, centerY);
+				}
+				
+				enemyImage.visible = false;
 			}
-			
-			enemyImage.visible = false;
+			else if (world != null) {
+				world.remove(this);
+			}
 		}
 	}
 }

@@ -67,6 +67,7 @@ package
 					if (collisionTime > RUPTURE_TIME) {
 						removeTween(collisionTween);
 						spillClones();
+						(world as MyWorld).rupturedCloneHosts++;
 						destroy();
 					}
 				}
@@ -89,6 +90,7 @@ package
 			
 			if (y > FP.screen.height) {
 				world.remove(this);
+				(world as MyWorld).missedCloneHosts++;
 			}
 		}
 		

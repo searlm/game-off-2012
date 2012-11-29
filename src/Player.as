@@ -32,6 +32,7 @@ package
 		//[Embed(source='assets/pickup.mp3')] private const PICKUP:Class;
 		
 		public var bullets:uint;
+		public var image:Image;
 		
 		private var speed:Number = 6;
 		//private var pickupSound:Sfx = new Sfx(PICKUP);
@@ -44,7 +45,8 @@ package
 			//playerImage = new Image(new BitmapData(31, 31));
 			//playerImage.color = 0xd97925;
 			//graphic = playerImage;
-			graphic = IMAGE_DOWN;
+			image = IMAGE_DOWN;
+			graphic = image;
 			mask = MASK_DOWN;
 			layer = LAYER;
 			type = "player";
@@ -61,17 +63,20 @@ package
 			if (p) {
 				//pickupSound.play();
 				bullets++;
+				(FP.world as MyWorld).ammoCollected++;
 				p.destroy();
 			}
 			
-			graphic = IMAGE_DOWN;
+			image = IMAGE_DOWN;
 			mask = MASK_DOWN;
 			
 			var offset:Number = speed;
-			if (Input.check(Key.UP)) { y -= offset; graphic = IMAGE_UP; mask = MASK_UP;}
-			if (Input.check(Key.DOWN)) { y += offset; graphic = IMAGE_DOWN; mask = MASK_DOWN;}	
-			if (Input.check(Key.LEFT)) { x -= offset; graphic = IMAGE_LEFT; mask = MASK_LEFT;}
-			if (Input.check(Key.RIGHT)) { x += offset; graphic = IMAGE_RIGHT; mask = MASK_RIGHT;}
+			if (Input.check(Key.UP)) { y -= offset; image = IMAGE_UP; mask = MASK_UP;}
+			if (Input.check(Key.DOWN)) { y += offset; image = IMAGE_DOWN; mask = MASK_DOWN;}	
+			if (Input.check(Key.LEFT)) { x -= offset; image = IMAGE_LEFT; mask = MASK_LEFT;}
+			if (Input.check(Key.RIGHT)) { x += offset; image = IMAGE_RIGHT; mask = MASK_RIGHT;}
+			
+			graphic = image;
 			
 			x = Math.max(x, 0);
 			x = Math.min(x, FP.screen.width - width);
@@ -87,6 +92,7 @@ package
 				FP.world.add(bullet);
 				
 				bullets--;
+				(FP.world as MyWorld).shotsFired++;
 				bulletWait = 8;
 			}
 		}

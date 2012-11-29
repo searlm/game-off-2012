@@ -16,6 +16,7 @@ package
 	{
 		public var player:Player;
 		
+		private static const ONE_SECOND:uint = 30;
 		private static const HUD_LAYER:int = -1;		
 		private static const GOAL:uint = 100;
 		private static const DEBUG:Boolean = true;
@@ -38,6 +39,8 @@ package
 		// awesomeness happens as a result
 		private var totalTicks:uint = 0;
 		
+		private var levelTimeText:Text = new Text("");
+		private var levelText:Text = new Text("1");
 		private var bulletText:Text = new Text("0");
 		private var progressChart:HumanOutline;
 		
@@ -46,27 +49,64 @@ package
 		private var deathSequence:Boolean = false;		
 		private var winSequence:Boolean = false;
 		
-		private var ammoSpawnTimes:Array = [120, 120, 150, 150];
-		private var enemySpawnTimes:Array = [45, 40, 35, 30];
+		private var difficultyTimes:Array = [
+			30*ONE_SECOND, 10*ONE_SECOND, 30*ONE_SECOND, 10*ONE_SECOND, 60*ONE_SECOND, 30*ONE_SECOND, 90*ONE_SECOND
+		];
+		private var ammoSpawnTimes:Array = [
+			5*ONE_SECOND, 3*ONE_SECOND, 5*ONE_SECOND, 3*ONE_SECOND, 7*ONE_SECOND, 3*ONE_SECOND, 7*ONE_SECOND
+		];
+		private var enemySpawnTimes:Array = [
+			120, 15, 60, 15, 30, 10, 30
+		];
 		
 		private var difficulty:uint = 0;		
-		private var difficultyTicksRemaining:uint = 30 * 60;
+		private var difficultyTicksRemaining:uint = difficultyTimes[0];
 		
+		private var nextEnemySpawnIndex:uint = 0;
+		private var enemySpawnOrder:Array = [];
+		
+		public var ammoCollected:uint = 0;
+		public var shotsFired:uint = 0;
+		public var enemyKills:uint = 0;
+		public var missedAmmoHosts:uint = 0;
+		public var rupturedAmmoHosts:uint = 0;
+		public var missedCloneHosts:uint = 0;
+		public var rupturedCloneHosts:uint = 0;
 		
 		public function MyWorld()
 		{
 			// TODO figure out dat CSS (?)
 			FP.screen.color = 0x2b2b2b;
 			
+			initEnemySpawnOrder();	
 			initHUD();
 			initPlayer();
+		}
+		
+		private function initEnemySpawnOrder():void
+		{
+			// shuffle the spawn order		
+			var tmp:Array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+			while (tmp.length > 0) {
+				// pick an element
+				var i:int = Math.random() * (tmp.length - 1);
+				
+				// swap the selected value to the front
+				var t:int = tmp[i];
+				tmp[i] = tmp[0];
+				tmp[0] = t;
+				
+				// move the selected value to the target array
+				enemySpawnOrder.push(tmp.shift());
+			}
 		}
 		
 		public function startDeathSequence():void
 		{
 			deathSequence = true;
 			
-			player.layer = HUD_LAYER;	
+			player.layer = HUD_LAYER;
+			player.image.alpha = 0.5;	
 			
 			var overlayBitmap:BitmapData = new BitmapData(FP.screen.width, FP.screen.height, false, 0x2b2b2b); 
 			sequenceOverlay = new Image(overlayBitmap);
@@ -81,9 +121,9 @@ package
 			sequenceTicksRemaining = 90;
 		}
 		
-		private function endDeathSequence():void
+		private function endWinSequence():void
 		{	
-			var directionsText:Text = new Text("press the spacebar to try again");		
+			var directionsText:Text = new Text("press the spacebar to play again");		
 			directionsText.font = "Blackout Midnight";
 			directionsText.color = 0xdddddd;
 			directionsText.size = 24;
@@ -95,6 +135,37 @@ package
 			directionsEntity.layer = HUD_LAYER;
 			add(directionsEntity);
 			
+			var mainText:Text = new Text("You win!");		
+			mainText.font = "Blackout Midnight";
+			mainText.color = 0xffffff;
+			mainText.size = 72;
+			
+			var mainEntity:Entity = new Entity();
+			mainEntity.graphic = mainText;
+			mainEntity.x = 32;
+			mainEntity.y = FP.screen.height - 96 - 24 - 72;
+			mainEntity.layer = HUD_LAYER;
+			add(mainEntity);			
+		}
+		
+		private function endDeathSequence():void
+		{	
+			sequenceOverlay.alpha = 1.0;
+			
+			progressChart.toForeground();
+			 
+			var directionsText:Text = new Text("press the spacebar to try again");		
+			directionsText.font = "Blackout Midnight";
+			directionsText.color = 0xdddddd;
+			directionsText.size = 24;
+			
+			var directionsEntity:Entity = new Entity();
+			directionsEntity.graphic = directionsText;
+			directionsEntity.x = 96;
+			directionsEntity.y = FP.screen.height - 96;
+			directionsEntity.layer = HUD_LAYER + 2;
+			add(directionsEntity);
+			
 			var mainText:Text = new Text("You lose");		
 			mainText.font = "Blackout Midnight";
 			mainText.color = 0xffffff;
@@ -102,15 +173,15 @@ package
 			
 			var mainEntity:Entity = new Entity();
 			mainEntity.graphic = mainText;
-			mainEntity.x = 96;
+			mainEntity.x = 32;
 			mainEntity.y = FP.screen.height - 96 - 24 - 72;
-			mainEntity.layer = HUD_LAYER;
+			mainEntity.layer = HUD_LAYER + 2;
 			add(mainEntity);			
 		}
 		
 		public function addClone():void
 		{
-			clones += 4;
+			clones += 2;
 			progressChart.progress = (clones / GOAL) * 100;
 			
 			if (clones >= GOAL) {
@@ -122,20 +193,27 @@ package
 		{
 			winSequence = true;
 			
-			var directionsText:Text = new Text("YOU WIN");			
-			directionsText.color = 0xfafafa;
-			directionsText.size = 48;
+			player.layer = HUD_LAYER;	
 			
-			var textEntity:Entity = new Entity();
-			textEntity.graphic = directionsText;
-			textEntity.x = FP.screen.width / 2 - directionsText.width / 2;
-			textEntity.y = FP.screen.height - 72;
-			textEntity.layer = HUD_LAYER;
-			add(textEntity);
+			// TODO switch to the animated sprite loop
+			
+			var overlayBitmap:BitmapData = new BitmapData(FP.screen.width, FP.screen.height, false, 0x2b2b2b); 
+			sequenceOverlay = new Image(overlayBitmap);
+			sequenceOverlay.alpha = 0;
+			var overlayEntity:Entity = new Entity;
+			overlayEntity.graphic = sequenceOverlay;
+			overlayEntity.layer = 1;		
+			overlayEntity.x = 0;
+			overlayEntity.y = 0;
+			add(overlayEntity);
+			
+			sequenceTicksRemaining = 90;
 		}
 		
 		private function handleDebugInputs():void {		
-			if (DEBUG) {				
+			if (DEBUG) {		
+				// note: input mappings don't respect the keyboard layout...
+				
 				// suicide
 				if (Input.pressed(Key.S)) {
 					startDeathSequence();					
@@ -168,22 +246,18 @@ package
 			
 			if (difficulty < enemySpawnTimes.length - 1 && difficultyTicksRemaining-- == 0) {
 				difficulty++;
-				difficultyTicksRemaining = 30 * 30;
+				difficultyTicksRemaining = difficultyTimes[difficulty];
 			}
 			
-			if (winSequence) {				
-				if (Input.pressed(Key.SPACE)) {
-					FP.world = new MyWorld;
-					return;
-				}
-				
-				//super.update();
-				return;
-			}
-			
-			if (deathSequence) {
+			if (deathSequence || winSequence) {
 				if (sequenceTicksRemaining == 0) {
-					endDeathSequence();
+					if (deathSequence) {
+						endDeathSequence();
+					}
+					else {
+						endWinSequence();
+					}
+					
 					sequenceTicksRemaining = -1;
 				}
 				else if (sequenceTicksRemaining == -1) {				
@@ -201,6 +275,10 @@ package
 				return;
 			}
 			
+			var levelSeconds:uint = Math.floor(difficultyTicksRemaining / ONE_SECOND);
+				
+			levelText.text = "" + (difficulty + 1);			
+			levelTimeText.text = levelSeconds + "s";
 			bulletText.text = "" + player.bullets;
 			
 			if (ticksUntilAmmoHostSpawn <= 0) {
@@ -248,22 +326,15 @@ package
 		
 		private function spawnEnemy():void
 		{	
+			var i:int = nextEnemySpawnIndex;
+			nextEnemySpawnIndex = (nextEnemySpawnIndex + 1) % enemySpawnOrder.length;			
+			
 			var e:Enemy = new Enemy;
-			var i3:int = (nextEnemySpawnSector < 0) ? Math.random() * 5 : nextEnemySpawnSector;
+			e.x = enemySpawnOrder[i] * FP.screen.width / 10;
+			e.y = -(e.height) - 1;
 			
-			// choose the next slot, just don't allow it to be the same as the last one
-			var j3:int = i3;
-			while (j3 == i3) {
-				j3 = Math.random() * 5;
-			}
-			nextEnemySpawnSector = j3;
-			
-			e.x = 16 + j3 * ((FP.screen.width - 32) / 5);
-			e.y = -(e.height);
-			
-			add(e);
-			
-			ticksUntilEnemySpawn = enemySpawnTimes[difficulty];
+			add(e);			
+			ticksUntilEnemySpawn = enemySpawnTimes[difficulty];					
 		}
 		
 		private function spawnAmmoHost():void
@@ -326,8 +397,43 @@ package
 			bulletEntity.layer = 9999;
 			bulletEntity.graphic = bulletText;
 			bulletEntity.x = bulletPreambleEntity.x + bulletPreamble.width + 8;
-			bulletEntity.y = FP.screen.height - 42 - 9;
+			bulletEntity.y = FP.screen.height - 42 - 8;
 			add(bulletEntity);
+			
+			// show the current level
+			var levelPreamble:Text = new Text("LEVEL:");
+			levelPreamble.font = "MainFont";
+			levelPreamble.color = 0xffffff;
+			levelPreamble.size = 24;
+			
+			var levelPreambleEntity:Entity = new Entity();
+			levelPreambleEntity.layer = 9999;
+			levelPreambleEntity.graphic = levelPreamble;
+			levelPreambleEntity.x = 16;
+			levelPreambleEntity.y = FP.screen.height - 24 - 10;
+			add(levelPreambleEntity);
+			
+			levelText.font = "MainFont";
+			levelText.color = 0xffffff;
+			levelText.size = 42;			
+			
+			var levelEntity:Entity = new Entity();
+			levelEntity.layer = 9999;
+			levelEntity.graphic = levelText;
+			levelEntity.x = levelPreambleEntity.x + levelPreamble.width + 8;
+			levelEntity.y = FP.screen.height - 42 - 9;
+			add(levelEntity);
+			
+			levelTimeText.font = "MainFont";
+			levelTimeText.color = 0x888888;
+			levelTimeText.size = 64;			
+			
+			var levelTimeEntity:Entity = new Entity();
+			levelTimeEntity.layer = 9999;
+			levelTimeEntity.graphic = levelTimeText;
+			levelTimeEntity.x = levelEntity.x + levelText.width + 32;
+			levelTimeEntity.y = FP.screen.height - 64 - 8;
+			add(levelTimeEntity);
 		}
 	}
 }
