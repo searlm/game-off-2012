@@ -31,7 +31,7 @@ package
 			outline.y = y;
 			
 			progressBar.graphic = new Image(new BitmapData(65, 1, false, 0xb2e335));						
-			progressBar.layer = LAYER + 1; // behind the outline graphic
+			progressBar.layer = LAYER;
 			progressBar.x = x;
 			progressBar.y = y + 116;
 						
@@ -45,8 +45,8 @@ package
 			percentTextEntity.x = outline.x + 2 + 65 / 2 - percentText.width / 2;
 			percentTextEntity.y = outline.y + 60 - percentText.height / 2;
 			
-			world.add(outline);
 			world.add(progressBar);
+			world.add(outline);
 			world.add(percentTextEntity);
 		}
 		
@@ -61,6 +61,16 @@ package
 			var h:uint = Math.max(112 * (percentComplete / 100), 1);
 			progressBar.graphic = new Image(new BitmapData(65, h, false, 0xb2e335));
 			progressBar.y = outline.y + 116 - h;
+		}
+		
+		/**
+		 * Bring the graphics forward above the overlay layer (used in the death sequence).
+		 */
+		public function toForeground():void
+		{
+			percentTextEntity.layer = 0;
+			outline.layer = 0;
+			progressBar.layer = 0;
 		}
 	}
 }
