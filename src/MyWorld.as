@@ -21,7 +21,7 @@ package
 		private static const ONE_SECOND:uint = 30;
 		private static const HUD_LAYER:int = -1;		
 		private static const GOAL:uint = 100;
-		private static const DEBUG:Boolean = true;
+		private static const DEBUG:Boolean = false;
 		
 		[Embed(source='assets/human_outline.png')] 
 		private const HUMAN_OUTLINE:Class;		
@@ -53,13 +53,16 @@ package
 		private var winSequence:Boolean = false;
 		
 		private var difficultyTimes:Array = [
-			30*ONE_SECOND, 10*ONE_SECOND, 30*ONE_SECOND, 10*ONE_SECOND, 60*ONE_SECOND, 30*ONE_SECOND, 90*ONE_SECOND
+			30*ONE_SECOND, 10*ONE_SECOND, 30*ONE_SECOND, 30*ONE_SECOND, 30*ONE_SECOND, 
+			10*ONE_SECOND, 30*ONE_SECOND, 10*ONE_SECOND, 30*ONE_SECOND, 90*ONE_SECOND
 		];
 		private var ammoSpawnTimes:Array = [
-			5*ONE_SECOND, 3*ONE_SECOND, 5*ONE_SECOND, 3*ONE_SECOND, 7*ONE_SECOND, 3*ONE_SECOND, 7*ONE_SECOND
+			5*ONE_SECOND, 4*ONE_SECOND, 4*ONE_SECOND, 5*ONE_SECOND, 7*ONE_SECOND, 
+			2*ONE_SECOND, 5*ONE_SECOND, 7*ONE_SECOND, 3*ONE_SECOND, 5*ONE_SECOND
 		];
 		private var enemySpawnTimes:Array = [
-			4*ONE_SECOND, ONE_SECOND/2, 2*ONE_SECOND, ONE_SECOND/2, ONE_SECOND, ONE_SECOND/3, ONE_SECOND
+			4*ONE_SECOND, ONE_SECOND/2, ONE_SECOND, ONE_SECOND, ONE_SECOND, 
+			ONE_SECOND/2, ONE_SECOND, ONE_SECOND/2, ONE_SECOND, ONE_SECOND
 		];
 		
 		private var difficulty:uint = 0;		
@@ -219,7 +222,7 @@ package
 		
 		public function addClone():void
 		{
-			clones += 2;
+			clones += 4;
 			progressChart.progress = (clones / GOAL) * 100;
 			
 			if (clones >= GOAL) {
@@ -465,16 +468,18 @@ package
 			levelEntity.y = FP.screen.height - 42 - 9;
 			add(levelEntity);
 			
-			levelTimeText.font = "MainFont";
-			levelTimeText.color = 0x888888;
-			levelTimeText.size = 64;			
-			
-			var levelTimeEntity:Entity = new Entity();
-			levelTimeEntity.layer = 9999;
-			levelTimeEntity.graphic = levelTimeText;
-			levelTimeEntity.x = levelEntity.x + levelText.width + 32;
-			levelTimeEntity.y = FP.screen.height - 64 - 8;
-			add(levelTimeEntity);
+			if (DEBUG) {	
+				levelTimeText.font = "MainFont";
+				levelTimeText.color = 0x888888;
+				levelTimeText.size = 64;			
+				
+				var levelTimeEntity:Entity = new Entity();
+				levelTimeEntity.layer = 9999;
+				levelTimeEntity.graphic = levelTimeText;
+				levelTimeEntity.x = levelEntity.x + levelText.width + 32;
+				levelTimeEntity.y = FP.screen.height - 64 - 8;
+				add(levelTimeEntity);
+			}
 		}
 	}
 }
