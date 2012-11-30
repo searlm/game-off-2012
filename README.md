@@ -12,7 +12,7 @@ Infeckshun is a simple arcade shoot-em-up. Our plucky hero is a virus, bent on t
 Use the arrow keys to move around. Use the spacebar to shoot enemies.
 
 ### Enemies
-cleaned up the readme layout with some line breaks
+![Enemy](https://raw.github.com/searlm/game-off-2012/master/src/assets/bad_dude_64x64.png)
 
 Watch out for these guys. They’re not terribly bright, but you’ll want to dispatch them quickly before they can gang up on you.
 
