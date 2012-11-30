@@ -30,11 +30,11 @@ package
 		private const MAIN_FONT:Class;
 		
 		private var clones:uint = 0;
-		private var ticksUntilCloneHostSpawn:uint = 60;
+		private var ticksUntilCloneHostSpawn:uint = 2 * ONE_SECOND;
 		private var nextCloneHostSpawnSector:int = -1;
 		private var ticksUntilAmmoHostSpawn:uint = 0;
 		private var nextAmmoHostSpawnSector:int = -1;
-		private var ticksUntilEnemySpawn:uint = 150;
+		private var ticksUntilEnemySpawn:uint = 3 * ONE_SECOND;
 		private var nextEnemySpawnSector:int = -1;
 		
 		// if you play the game long enough to overflow a uint, you deserve whatever
@@ -53,7 +53,7 @@ package
 		private var winSequence:Boolean = false;
 		
 		private var difficultyTimes:Array = [
-			30*ONE_SECOND, 10*ONE_SECOND, 30*ONE_SECOND, 30*ONE_SECOND, 30*ONE_SECOND, 
+			30*ONE_SECOND, 20*ONE_SECOND, 30*ONE_SECOND, 10*ONE_SECOND, 30*ONE_SECOND, 
 			10*ONE_SECOND, 30*ONE_SECOND, 10*ONE_SECOND, 30*ONE_SECOND, 90*ONE_SECOND
 		];
 		private var ammoSpawnTimes:Array = [
@@ -61,7 +61,7 @@ package
 			2*ONE_SECOND, 5*ONE_SECOND, 7*ONE_SECOND, 3*ONE_SECOND, 5*ONE_SECOND
 		];
 		private var enemySpawnTimes:Array = [
-			4*ONE_SECOND, ONE_SECOND/2, ONE_SECOND, ONE_SECOND, ONE_SECOND, 
+			4*ONE_SECOND, ONE_SECOND, 3*ONE_SECOND, ONE_SECOND/2, 3*ONE_SECOND, 
 			ONE_SECOND/2, ONE_SECOND, ONE_SECOND/2, ONE_SECOND, ONE_SECOND
 		];
 		
@@ -82,7 +82,6 @@ package
 		
 		public function MyWorld()
 		{
-			// TODO figure out dat CSS (?)
 			FP.screen.color = 0x2b2b2b;
 			
 			initEnemySpawnOrder();	
@@ -156,7 +155,7 @@ package
 			var directionsEntity:Entity = new Entity();
 			directionsEntity.graphic = directionsText;
 			directionsEntity.x = 32;
-			directionsEntity.y = 64 + 72 + 24; //FP.screen.height - 96;
+			directionsEntity.y = 64 + 72 + 24;
 			directionsEntity.layer = HUD_LAYER + 2;
 			add(directionsEntity);
 			
@@ -168,7 +167,7 @@ package
 			var mainEntity:Entity = new Entity();
 			mainEntity.graphic = mainText;
 			mainEntity.x = 32;
-			mainEntity.y = 64;//FP.screen.height - 96 - 24 - 72;
+			mainEntity.y = 64;
 			mainEntity.layer = HUD_LAYER + 2;
 			add(mainEntity);		
 			
@@ -189,7 +188,7 @@ package
 		
 		private function endDeathSequence():void
 		{
-			commonEndSequence("You lose!");
+			commonEndSequence("Game over");
 		}
 		
 		private function addStatText(label:String, value:Object, labelEndX:uint, labelEndY:int):void
@@ -365,7 +364,7 @@ package
 			cloneHost.y = -(cloneHost.height);
 			add(cloneHost);				
 			
-			ticksUntilCloneHostSpawn = 240;
+			ticksUntilCloneHostSpawn = 7 * ONE_SECOND;
 		}
 		
 		private function spawnEnemy():void
