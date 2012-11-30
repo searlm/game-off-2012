@@ -28,9 +28,7 @@ package
 		private var collisionTween:ColorTween = new ColorTween();
 		
 		public function CloneHost()
-		{
-			collisionTween.tween(RUPTURE_TIME, 0xffffff, 0x888888);
-			
+		{	
 			hostImage = new Image(HOST);	
 			hostImage.color = 0xffffff;
 			hostImage.alpha = 0.9;
@@ -50,11 +48,23 @@ package
 			type = "clone_host";
 		}
 		
-		override public function update():void
+		/**
+		 * Prep for display as a new instance (used after
+		 * getting a potentially recycled instance).
+		 */
+		public function reset():void
 		{
-			y += 2;
-			
+			collisionTween.tween(RUPTURE_TIME, 0xffffff, 0x666666);
+			collisionTime = -1;
+			collidable = true;
+			hostImage.visible = true;
+			hostImage.color = 0xffffff;
+		}
+		
+		override public function update():void
+		{			
 			if (collidable) {
+				y += 2;
 				if (collide("player", x, y)) {
 					if (collisionTime < 0) {
 						collisionTime = 0;	
@@ -65,7 +75,7 @@ package
 					hostImage.color = collisionTween.color;
 					
 					if (collisionTime > RUPTURE_TIME) {
-						removeTween(collisionTween);
+						collisionTween.cancel();
 						spillClones();
 						(world as MyWorld).rupturedCloneHosts++;
 						destroy();
@@ -73,9 +83,8 @@ package
 				}
 				else {
 					if (collisionTime >= 0) {
-						removeTween(collisionTween);
-					}
-					else {
+						collisionTween.cancel();
+						collisionTween.tween(RUPTURE_TIME, 0xffffff, 0x666666);
 						hostImage.color = 0xffffff;
 					}
 					
@@ -84,12 +93,12 @@ package
 			} 
 			else {
 				if (explosionEmitter.particleCount == 0 && world != null) {
-					world.remove(this);
+					world.recycle(this);//remove(this);
 				}
 			}
 			
 			if (y > FP.screen.height) {
-				world.remove(this);
+				world.recycle(this);//remove(this);
 				(world as MyWorld).missedCloneHosts++;
 			}
 		}
@@ -107,7 +116,6 @@ package
 			}
 			
 			hostImage.visible = false;
-			//FP.world.remove(this);	
 		}
 	}
 }

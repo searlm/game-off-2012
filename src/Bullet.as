@@ -25,10 +25,18 @@ package
 			type = "bullet";
 		}
 		
+		/**
+		 * Prep for display as a new instance (used after
+		 * getting a potentially recycled instance).
+		 */
+		public function reset():void
+		{
+		}
+		
 		override public function update():void 
 		{
 			if (y < height) {
-				FP.world.remove(this);
+				FP.world.recycle(this);//remove(this);
 			}
 			
 			y -= 10;
@@ -36,7 +44,7 @@ package
 		
 		public function destroy():void 
 		{
-			FP.world.remove(this);	
+			FP.world.recycle(this);//remove(this);	
 		}
 	}
 }

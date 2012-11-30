@@ -41,6 +41,16 @@ package
 			type = "enemy";
 		}
 		
+		/**
+		 * Prep for display as a new instance (used after
+		 * getting a potentially recycled instance).
+		 */
+		public function reset():void
+		{
+			collidable = true;
+			enemyImage.visible = true;
+		}
+		
 		override public function update():void
 		{
 			if (collidable) {
@@ -63,7 +73,7 @@ package
 			} 
 			else {
 				if (explosionEmitter.particleCount == 0 && world != null) {
-					world.remove(this);
+					world.recycle(this);//remove(this);
 				}
 			}
 			
@@ -124,7 +134,7 @@ package
 				enemyImage.visible = false;
 			}
 			else if (world != null) {
-				world.remove(this);
+				world.recycle(this);//remove(this);
 			}
 		}
 	}

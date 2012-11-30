@@ -23,6 +23,14 @@ package
 			type = "powerup";
 		}
 		
+		/**
+		 * Prep for display as a new instance (used after
+		 * getting a potentially recycled instance).
+		 */
+		public function reset():void
+		{
+		}
+		
 		override public function update():void
 		{
 			y += 1;
@@ -35,7 +43,7 @@ package
 		
 		public function destroy():void 
 		{
-			FP.world.remove(this);	
+			FP.world.recycle(this);//remove(this);	
 		}
 	}
 }

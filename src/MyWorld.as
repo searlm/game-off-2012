@@ -350,7 +350,8 @@ package
 		
 		private function spawnCloneHost():void
 		{
-			var cloneHost:CloneHost = new CloneHost;
+			var cloneHost:CloneHost = create(CloneHost, false) as CloneHost;//new CloneHost;
+			cloneHost.reset();
 			var i2:int = (nextCloneHostSpawnSector < 0) ? Math.random() * 5 : nextCloneHostSpawnSector;
 			
 			// choose the next slot, just don't allow it to be the same as the last one
@@ -372,7 +373,8 @@ package
 			var i:int = nextEnemySpawnIndex;
 			nextEnemySpawnIndex = (nextEnemySpawnIndex + 1) % enemySpawnOrder.length;			
 			
-			var e:Enemy = new Enemy;
+			var e:Enemy = create(Enemy, false) as Enemy;//new Enemy;
+			e.reset();
 			e.x = enemySpawnOrder[i] * FP.screen.width / 10;
 			e.y = -(e.height) - 1;
 			
@@ -382,7 +384,8 @@ package
 		
 		private function spawnAmmoHost():void
 		{
-			var ammoHost:AmmoHost = new AmmoHost;
+			var ammoHost:AmmoHost = create(AmmoHost, false) as AmmoHost;//new AmmoHost;
+			ammoHost.reset();
 			var i1:int = (nextAmmoHostSpawnSector < 0) ? Math.random() * 6 : nextAmmoHostSpawnSector;
 			
 			// choose the next slot, just don't allow it to be the same as the last one

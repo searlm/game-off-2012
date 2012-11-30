@@ -86,7 +86,8 @@ package
 			y = Math.min(y, FP.screen.height - height);
 			
 			if (bulletWait == 0 && bullets > 0 && Input.pressed(Key.SPACE)) {
-				var bullet:Bullet = new Bullet();
+				var bullet:Bullet = FP.world.create(Bullet, false) as Bullet;//new Bullet();
+				bullet.reset();
 				bullet.x = x + width / 2 - bullet.width / 2;
 				bullet.y = y - 16;
 				FP.world.add(bullet);
