@@ -27,8 +27,9 @@ package
 		{
 			y += 1;
 			
-			if (y > FP.screen.height || x > FP.screen.width || x < 0 || y < 0) {
+			if (y > FP.screen.height || x > FP.screen.width || x < 0 || y < 0) {				
 				destroy();
+				(world as MyWorld).missedPickups++;
 			}
 		}
 		
