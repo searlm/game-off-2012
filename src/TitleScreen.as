@@ -22,7 +22,7 @@ package
 		
 		private var mainText:Text = new Text("infeckshun");		
 		private var directionsText:Text = new Text("press the spacebar to begin");
-		private var copyrightText:Text = new Text("(C) Sam Martin, 2012");
+		private var copyrightText:Text = new Text("(C) S. Martin & L. Briguglio, 2012");
 		
 		public function TitleScreen()
 		{
@@ -52,7 +52,7 @@ package
 			copyrightText.color = 0x999999;
 			copyrightText.size = 18;
 			copyrightText.font = "Blackout Midnight";
-			addText(copyrightText, FP.screen.width - copyrightText.width - 4, FP.screen.height - copyrightText.height - 4);			
+			addText(copyrightText, FP.screen.width - copyrightText.textWidth - 8, FP.screen.height - copyrightText.textHeight - 4);			
 		}
 		
 		private function addText(text:Text, x:int, y:int):void
