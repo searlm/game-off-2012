@@ -12,7 +12,7 @@ Infeckshun is a simple arcade shoot-em-up. Our plucky hero is a virus, bent on t
 Use the arrow keys to move around. Use the spacebar to shoot enemies.
 
 ### Enemies
-![Enemy](https://raw.github.com/searlm/game-off-2012/master/src/assets/bad_dude_64x64.png)
+cleaned up the readme layout with some line breaks
 
 Watch out for these guys. They’re not terribly bright, but you’ll want to dispatch them quickly before they can gang up on you.
 
@@ -24,7 +24,7 @@ You can rupture these cells by hanging out inside for a couple seconds, sending 
 ### Ammo cells
 ![Ammo cell](https://raw.github.com/searlm/game-off-2012/master/src/assets/ammo_host_96x128.png)
 
-Like clone cells, ammo cells rupture after a couple seconds of contact, leaving bullets behind. You’ll need plenty of bullets to fight off your enemies.
+Like clone cells, ammo cells rupture after a couple seconds of contact, leaving bullets (![Bullets](https://raw.github.com/searlm/game-off-2012/master/src/assets/bullet_17x17.png)) behind. You’ll need plenty of bullets to fight off your enemies.
 
 ##Resources
 Infeckshun uses the [FlashPunk](http://flashpunk.net) game engine. All included fonts may be found at [The League of Moveable Type](http://www.theleagueofmoveabletype.com). Graphical assets are courtesy of [Louise Briguglio](http://brigugl.io).
