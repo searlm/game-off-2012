@@ -6,9 +6,11 @@ package
 	
 	import net.flashpunk.Entity;
 	import net.flashpunk.FP;
+	import net.flashpunk.Tween;
 	import net.flashpunk.World;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Text;
+	import net.flashpunk.tweens.motion.LinearMotion;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 
@@ -44,6 +46,7 @@ package
 		private var bulletText:Text = new Text("0");
 		private var progressChart:HumanOutline;
 		
+		private var playerResetTween:LinearMotion;
 		private var sequenceTicksRemaining:int;
 		private var sequenceOverlay:Image;
 		private var deathSequence:Boolean = false;		
@@ -56,7 +59,7 @@ package
 			5*ONE_SECOND, 3*ONE_SECOND, 5*ONE_SECOND, 3*ONE_SECOND, 7*ONE_SECOND, 3*ONE_SECOND, 7*ONE_SECOND
 		];
 		private var enemySpawnTimes:Array = [
-			120, 15, 60, 15, 30, 10, 30
+			4*ONE_SECOND, ONE_SECOND/2, 2*ONE_SECOND, ONE_SECOND/2, ONE_SECOND, ONE_SECOND/3, ONE_SECOND
 		];
 		
 		private var difficulty:uint = 0;		
@@ -67,6 +70,7 @@ package
 		
 		public var ammoCollected:uint = 0;
 		public var shotsFired:uint = 0;
+		public var missedPickups:uint = 0;
 		public var enemyKills:uint = 0;
 		public var missedAmmoHosts:uint = 0;
 		public var rupturedAmmoHosts:uint = 0;
@@ -101,12 +105,23 @@ package
 			}
 		}
 		
+		/**
+		 * Move the player back to the center, out of the way of the HUD.
+		 */
+		private function startPlayerResetTween():void
+		{
+			playerResetTween = new LinearMotion;
+			playerResetTween.setMotion(player.x, player.y, FP.screen.width / 2 - player.width / 2, FP.screen.height / 2 - player.height / 2, 3.0);
+			addTween(playerResetTween);
+			playerResetTween.start();	
+		}
+		
 		public function startDeathSequence():void
 		{
 			deathSequence = true;
 			
-			player.layer = HUD_LAYER;
-			player.image.alpha = 0.5;	
+			player.layer = HUD_LAYER;	
+			startPlayerResetTween();
 			
 			var overlayBitmap:BitmapData = new BitmapData(FP.screen.width, FP.screen.height, false, 0x2b2b2b); 
 			sequenceOverlay = new Image(overlayBitmap);
@@ -121,39 +136,15 @@ package
 			sequenceTicksRemaining = 90;
 		}
 		
-		private function endWinSequence():void
-		{	
-			var directionsText:Text = new Text("press the spacebar to play again");		
-			directionsText.font = "Blackout Midnight";
-			directionsText.color = 0xdddddd;
-			directionsText.size = 24;
+		private function commonEndSequence(label:String):void
+		{
+			removeTween(playerResetTween);
+			playerResetTween = null;
 			
-			var directionsEntity:Entity = new Entity();
-			directionsEntity.graphic = directionsText;
-			directionsEntity.x = 96;
-			directionsEntity.y = FP.screen.height - 96;
-			directionsEntity.layer = HUD_LAYER;
-			add(directionsEntity);
-			
-			var mainText:Text = new Text("You win!");		
-			mainText.font = "Blackout Midnight";
-			mainText.color = 0xffffff;
-			mainText.size = 72;
-			
-			var mainEntity:Entity = new Entity();
-			mainEntity.graphic = mainText;
-			mainEntity.x = 32;
-			mainEntity.y = FP.screen.height - 96 - 24 - 72;
-			mainEntity.layer = HUD_LAYER;
-			add(mainEntity);			
-		}
-		
-		private function endDeathSequence():void
-		{	
 			sequenceOverlay.alpha = 1.0;
 			
 			progressChart.toForeground();
-			 
+			
 			var directionsText:Text = new Text("press the spacebar to try again");		
 			directionsText.font = "Blackout Midnight";
 			directionsText.color = 0xdddddd;
@@ -161,12 +152,12 @@ package
 			
 			var directionsEntity:Entity = new Entity();
 			directionsEntity.graphic = directionsText;
-			directionsEntity.x = 96;
-			directionsEntity.y = FP.screen.height - 96;
+			directionsEntity.x = 32;
+			directionsEntity.y = 64 + 72 + 24; //FP.screen.height - 96;
 			directionsEntity.layer = HUD_LAYER + 2;
 			add(directionsEntity);
 			
-			var mainText:Text = new Text("You lose");		
+			var mainText:Text = new Text(label);		
 			mainText.font = "Blackout Midnight";
 			mainText.color = 0xffffff;
 			mainText.size = 72;
@@ -174,9 +165,56 @@ package
 			var mainEntity:Entity = new Entity();
 			mainEntity.graphic = mainText;
 			mainEntity.x = 32;
-			mainEntity.y = FP.screen.height - 96 - 24 - 72;
+			mainEntity.y = 64;//FP.screen.height - 96 - 24 - 72;
 			mainEntity.layer = HUD_LAYER + 2;
-			add(mainEntity);			
+			add(mainEntity);		
+			
+			var yBaseline:uint = FP.screen.height - 136;
+			
+			addStatText("Kills", enemyKills, 128, yBaseline);			
+			addStatText("Shots fired", shotsFired, 128, yBaseline + 50);			
+			addStatText("Accuracy", shotsFired == 0 ? "N/A" : (Math.round(enemyKills / shotsFired * 100 * 10) / 10) + "%", 128, yBaseline + 100);			
+			addStatText("Ammo collected", ammoCollected + " / " + (ammoCollected + missedPickups), FP.screen.width - 230, yBaseline);			
+			addStatText("Ammo hosts ruptured", rupturedAmmoHosts + " / " + (missedAmmoHosts + rupturedAmmoHosts), FP.screen.width - 230, yBaseline + 50);
+			addStatText("Clone hosts ruptured", rupturedCloneHosts + " / " + (missedCloneHosts + rupturedCloneHosts), FP.screen.width - 230, yBaseline + 100);						
+		}
+		
+		private function endWinSequence():void
+		{			
+			commonEndSequence("You win!");
+		}
+		
+		private function endDeathSequence():void
+		{
+			commonEndSequence("You lose!");
+		}
+		
+		private function addStatText(label:String, value:Object, labelEndX:uint, labelEndY:int):void
+		{
+			// label
+			var labelText:Text = new Text(label + ":");
+			labelText.font = "MainFont";
+			labelText.color = 0xdddddd;
+			labelText.size = 24;
+			
+			var labelEntity:Entity = new Entity();
+			labelEntity.layer = HUD_LAYER + 2;
+			labelEntity.graphic = labelText;
+			labelEntity.x = labelEndX - labelText.textWidth;
+			labelEntity.y = labelEndY;
+			add(labelEntity);
+			
+			var valueText:Text = new Text("" + value);
+			valueText.font = "MainFont";
+			valueText.color = 0xffffff;
+			valueText.size = 42;			
+			
+			var levelEntity:Entity = new Entity();
+			levelEntity.layer = HUD_LAYER + 2;
+			levelEntity.graphic = valueText;
+			levelEntity.x = labelEndX + 8;
+			levelEntity.y = labelEndY - 16;
+			add(levelEntity);
 		}
 		
 		public function addClone():void
@@ -194,6 +232,7 @@ package
 			winSequence = true;
 			
 			player.layer = HUD_LAYER;	
+			startPlayerResetTween();
 			
 			// TODO switch to the animated sprite loop
 			
@@ -269,6 +308,8 @@ package
 				else {
 					sequenceOverlay.alpha = (90 - sequenceTicksRemaining) / 90;
 					sequenceTicksRemaining--;					
+					player.x = playerResetTween.x;			
+					player.y = playerResetTween.y;
 				}
 				
 				//super.update();
