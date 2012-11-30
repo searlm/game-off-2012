@@ -68,8 +68,8 @@ package
 		 */
 		public function toForeground():void
 		{
-			percentTextEntity.layer = 0;
 			progressBar.layer = 0;
+			percentTextEntity.layer = 0;
 			outline.layer = 0;
 		}
 	}
