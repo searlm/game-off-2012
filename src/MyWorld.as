@@ -53,13 +53,13 @@ package
 		private var winSequence:Boolean = false;
 		
 		private var difficultyTimes:Array = [
-			30, 15, 30, 20, 45, 20, 30, 20, 40, 90
+			30, 15, 30, 15, 45, 15, 30, 20, 40, 90
 		];
 		private var ammoSpawnTimes:Array = [
-			5, 4, 4, 5, 4, 4, 5, 7, 4, 7
+			5, 4, 4, 5, 4, 4, 4, 7, 4, 7
 		];
 		private var enemySpawnTimes:Array = [
-			4, 0.5, 2, 0.5, 2, 0.5, 1.5, 0.33, 1, 1
+			4, 0.5, 3, 0.5, 2, 0.5, 1, 0.33, 1, 1
 		];
 		
 		private var difficulty:uint = 0;		
