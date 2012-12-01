@@ -90,7 +90,7 @@ package
 			backgroundEmitter.newType("ambiance", [0]); 
 			backgroundEmitter.relative = false;
 			
-			backgroundEmitter.setMotion("ambiance", 270, FP.screen.height + 10, 7, 0, 0, -1);
+			backgroundEmitter.setMotion("ambiance", 270, FP.screen.height + 10, 7, 0, 0, 0);
 			e.layer = 99999;
 			e.graphic = backgroundEmitter;
 			e.x = FP.screen.width / 2;
