@@ -21,7 +21,7 @@ package
 		
 		private static const HUD_LAYER:int = -1;		
 		private static const GOAL:uint = 100;
-		private static const DEBUG:Boolean = true;
+		private static const DEBUG:Boolean = false;
 		private static const BG_PARTICLE_SPAWN_TIME:Number = 1/10; // seconds
 		
 		[Embed(source='assets/human_outline.png')] 
@@ -86,11 +86,11 @@ package
 			initPlayer();
 			
 			var e:Entity = new Entity;
-			backgroundEmitter = new Emitter(new BitmapData(5, 5, false, 0x3a3a3a), 5, 5);
+			backgroundEmitter = new Emitter(new BitmapData(4, 6, false, 0x3a3a3a), 4, 6);
 			backgroundEmitter.newType("ambiance", [0]); 
 			backgroundEmitter.relative = false;
 			
-			backgroundEmitter.setMotion("ambiance", 270, FP.screen.height + 10, 10.0, 0, 0, -1);
+			backgroundEmitter.setMotion("ambiance", 270, FP.screen.height + 10, 7, 0, 0, -1);
 			e.layer = 99999;
 			e.graphic = backgroundEmitter;
 			e.x = FP.screen.width / 2;
@@ -164,7 +164,7 @@ package
 			var directionsEntity:Entity = new Entity();
 			directionsEntity.graphic = directionsText;
 			directionsEntity.x = 32;
-			directionsEntity.y = 64 + 72 + 24;
+			directionsEntity.y = 48 + 72 + 24;
 			directionsEntity.layer = HUD_LAYER + 2;
 			add(directionsEntity);
 			
@@ -176,18 +176,18 @@ package
 			var mainEntity:Entity = new Entity();
 			mainEntity.graphic = mainText;
 			mainEntity.x = 32;
-			mainEntity.y = 64;
+			mainEntity.y = 48;
 			mainEntity.layer = HUD_LAYER + 2;
 			add(mainEntity);		
 			
-			var yBaseline:uint = FP.screen.height - 136;
+			var yBaseline:uint = FP.screen.height - 160;//136;
 			
-			addStatText("Kills", enemyKills, 128, yBaseline);			
-			addStatText("Shots fired", shotsFired, 128, yBaseline + 50);			
-			addStatText("Accuracy", shotsFired == 0 ? "N/A" : (Math.round(enemyKills / shotsFired * 100 * 10) / 10) + "%", 128, yBaseline + 100);			
-			addStatText("Ammo collected", ammoCollected + " / " + (ammoCollected + missedPickups), FP.screen.width - 230, yBaseline);			
-			addStatText("Ammo hosts ruptured", rupturedAmmoHosts + " / " + (missedAmmoHosts + rupturedAmmoHosts), FP.screen.width - 230, yBaseline + 50);
-			addStatText("Clone hosts ruptured", rupturedCloneHosts + " / " + (missedCloneHosts + rupturedCloneHosts), FP.screen.width - 230, yBaseline + 100);						
+			addStatText("Kills", enemyKills, 116, yBaseline);			
+			addStatText("Shots fired", shotsFired, 116, yBaseline + 50);			
+			addStatText("Accuracy", shotsFired == 0 ? "N/A" : (Math.round(enemyKills / shotsFired * 100 * 10) / 10) + "%", 116, yBaseline + 100);			
+			addStatText("Ammo collected", ammoCollected + " / " + (ammoCollected + missedPickups), FP.screen.width - 240, yBaseline);			
+			addStatText("Ammo hosts ruptured", rupturedAmmoHosts + " / " + (missedAmmoHosts + rupturedAmmoHosts), FP.screen.width - 240, yBaseline + 50);
+			addStatText("Clone hosts ruptured", rupturedCloneHosts + " / " + (missedCloneHosts + rupturedCloneHosts), FP.screen.width - 240, yBaseline + 100);						
 		}
 		
 		private function endWinSequence():void
