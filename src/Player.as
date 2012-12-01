@@ -117,7 +117,7 @@ package
 				
 				bullets--;
 				(FP.world as MyWorld).shotsFired++;
-				bulletWait = 8;
+				bulletWait = 3;
 			}
 		}
 	}
