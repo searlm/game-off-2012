@@ -16,6 +16,7 @@ package
 	{
 		private static const LAYER:int = 50;
 		private static const RUPTURE_TIME:Number = 1.5; // seconds to rupture
+		private static const SPEED:uint = 70; // pixels per second
 		
 		[Embed(source='assets/clone_host_128x126.png')] private const HOST:Class;
 		[Embed(source='assets/hero_clone_16x18.png')] private const CLONE:Class;
@@ -64,7 +65,7 @@ package
 		override public function update():void
 		{			
 			if (collidable) {
-				y += 2;
+				moveBy(0, SPEED * FP.elapsed);
 				if (collide("player", x, y)) {
 					if (collisionTime < 0) {
 						collisionTime = 0;	

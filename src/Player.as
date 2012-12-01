@@ -15,6 +15,7 @@ package
 	public class Player extends Entity
 	{
 		private static const LAYER:int = 100;
+		private static const SPEED:uint = 220; // pixels per second
 		
 		[Embed(source='assets/hero_left_48x53.png')] private const PLAYER_LEFT:Class;
 		[Embed(source='assets/hero_up_48x53.png')] private const PLAYER_UP:Class;
@@ -36,22 +37,20 @@ package
 		private const MASK_RIGHT:Pixelmask = new Pixelmask(IMAGE_RIGHT.buffer);
 		
 		//[Embed(source='assets/pickup.mp3')] private const PICKUP:Class;
+		//private var pickupSound:Sfx = new Sfx(PICKUP);
 		
 		public var bullets:uint;
 		public var image:Image;
 		
-		private var speed:Number = 6;
-		//private var pickupSound:Sfx = new Sfx(PICKUP);
-		private var playerImage:Image;
 		
-		private var bulletWait:uint = 0;
+		private var bulletWait:Number = 0;
+		
+		private var playerImage:Image;
 		
 		public function Player()
 		{
-			//playerImage = new Image(new BitmapData(31, 31));
-			//playerImage.color = 0xd97925;
-			//graphic = playerImage;
 			winSprite.add("win", [0, 1, 0, 2], 8, true);
+			
 			image = IMAGE_DOWN;
 			graphic = image;
 			mask = MASK_DOWN;
@@ -77,10 +76,6 @@ package
 				return;
 			}
 			
-			if (bulletWait > 0) {
-				bulletWait--;
-			}
-			
 			// TODO multiple powerup collisions in a frame?
 			var p:Powerup = collide("powerup", x, y) as Powerup;
 			if (p) {
@@ -93,11 +88,15 @@ package
 			image = IMAGE_DOWN;
 			mask = MASK_DOWN;
 			
-			var offset:Number = speed;
-			if (Input.check(Key.UP)) { y -= offset; image = IMAGE_UP; mask = MASK_UP;}
-			if (Input.check(Key.DOWN)) { y += offset; image = IMAGE_DOWN; mask = MASK_DOWN;}	
-			if (Input.check(Key.LEFT)) { x -= offset; image = IMAGE_LEFT; mask = MASK_LEFT;}
-			if (Input.check(Key.RIGHT)) { x += offset; image = IMAGE_RIGHT; mask = MASK_RIGHT;}
+			var offset:Number = SPEED * FP.elapsed;
+			var xOffset:Number = 0;
+			var yOffset:Number = 0;
+			if (Input.check(Key.UP)) { yOffset = -offset; image = IMAGE_UP; mask = MASK_UP;}
+			if (Input.check(Key.DOWN)) { yOffset = offset; image = IMAGE_DOWN; mask = MASK_DOWN;}	
+			if (Input.check(Key.LEFT)) { xOffset = -offset; image = IMAGE_LEFT; mask = MASK_LEFT;}
+			if (Input.check(Key.RIGHT)) { xOffset = offset; image = IMAGE_RIGHT; mask = MASK_RIGHT;}
+			
+			moveBy(xOffset, yOffset);
 			
 			graphic = image;
 			
@@ -108,7 +107,11 @@ package
 			y = Math.max(y, 0);
 			y = Math.min(y, FP.screen.height - height);
 			
-			if (bulletWait == 0 && bullets > 0 && Input.pressed(Key.SPACE)) {
+			if (bulletWait > 0) {				
+				bulletWait -= FP.elapsed;
+			}
+			
+			if (bulletWait <= 0 && bullets > 0 && Input.pressed(Key.SPACE)) {
 				var bullet:Bullet = FP.world.create(Bullet, false) as Bullet;//new Bullet();
 				bullet.reset();
 				bullet.x = x + width / 2 - bullet.width / 2;
@@ -117,7 +120,7 @@ package
 				
 				bullets--;
 				(FP.world as MyWorld).shotsFired++;
-				bulletWait = 3;
+				bulletWait = 0.1;
 			}
 		}
 	}

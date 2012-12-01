@@ -15,7 +15,8 @@ package
 	public class Enemy extends Entity
 	{
 		private static const LAYER:int = 100;
-		private static const MIN_Y_COORD:int = 8;
+		private static const MIN_Y_COORD:int = 0;
+		private static const SPEED:uint = 40;
 		
 		[Embed(source='assets/bad_dude_64x64.png')] private const BAD_DUDE:Class;
 		
@@ -52,7 +53,7 @@ package
 		}
 		
 		override public function update():void
-		{
+		{	
 			if (collidable) {
 				var bullet:Bullet = collide("bullet", x, y) as Bullet;				
 				if (bullet) {
@@ -75,51 +76,38 @@ package
 				if (explosionEmitter.particleCount == 0 && world != null) {
 					world.recycle(this);//remove(this);
 				}
-			}
+			}		
 			
 			// if we're above the min height, just drop straight down to 
 			// clear space for more enemies to spawn at the top
 			if (y < MIN_Y_COORD) {
-				if (!collide("enemy", x, y+1)) {
-					y++;	
-				}
-				else {
-					if (y < -63) {
-						trace("[PILEUP] REMOVAL(" + x + ", " + y + ")");
-						destroy(false);					
-					}
-					else {
-						trace("[PILEUP] COLLIDE(" + x + ", " + y + ")");	
-					}
-				}
+				moveBy(0, SPEED * FP.elapsed, "enemy", true);				
 			}
 			else {
-				var world:MyWorld = FP.world as MyWorld;
-				if (Math.abs(centerX - world.player.centerX) > 3) {				
-					if (centerX < world.player.centerX) {
-						if (!collide("enemy", x+1, y)) {
-							x++;	
-						}
+				var offset:Number = SPEED * FP.elapsed;					
+				var xOffset:Number = 0;
+				var yOffset:Number = 0;
+				
+				var world:MyWorld = FP.world as MyWorld;				
+				if (Math.abs(centerX - world.player.centerX) > offset) {				
+					if (centerX < world.player.centerX) {						
+						xOffset = offset;
 					}
 					else if (centerX > world.player.centerX) {
-						if (!collide("enemy", x-1, y)) {
-							x--;	
-						}
+						xOffset = -offset;
 					}
 				}
 				
-				if (Math.abs(centerY - world.player.centerY) > 3) {				
+				if (Math.abs(centerY - world.player.centerY) > offset) {				
 					if (centerY < world.player.centerY) {
-						if (!collide("enemy", x, y+1)) {
-							y++;	
-						}
+						yOffset = offset;
 					}
 					else if (y > MIN_Y_COORD && centerY > world.player.centerY) {
-						if (!collide("enemy", x, y-1)) {
-							y--;	
-						}
+						yOffset = -offset;
 					}
 				}
+				
+				moveBy(xOffset, yOffset, "enemy", true);				
 			}
 		}
 		

@@ -8,6 +8,7 @@ package
 	import net.flashpunk.FP;
 	import net.flashpunk.Tween;
 	import net.flashpunk.World;
+	import net.flashpunk.graphics.Emitter;
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Text;
 	import net.flashpunk.tweens.motion.LinearMotion;
@@ -18,10 +19,10 @@ package
 	{
 		public var player:Player;
 		
-		private static const ONE_SECOND:uint = 30;
 		private static const HUD_LAYER:int = -1;		
 		private static const GOAL:uint = 100;
-		private static const DEBUG:Boolean = false;
+		private static const DEBUG:Boolean = true;
+		private static const BG_PARTICLE_SPAWN_TIME:Number = 1/10; // seconds
 		
 		[Embed(source='assets/human_outline.png')] 
 		private const HUMAN_OUTLINE:Class;		
@@ -30,16 +31,15 @@ package
 		private const MAIN_FONT:Class;
 		
 		private var clones:uint = 0;
-		private var ticksUntilCloneHostSpawn:uint = 2 * ONE_SECOND;
+		private var timeUntilCloneHostSpawn:Number = 2;
 		private var nextCloneHostSpawnSector:int = -1;
-		private var ticksUntilAmmoHostSpawn:uint = 0;
+		private var timeUntilAmmoHostSpawn:Number = 0;
 		private var nextAmmoHostSpawnSector:int = -1;
-		private var ticksUntilEnemySpawn:uint = 3 * ONE_SECOND;
+		private var timeUntilEnemySpawn:Number = 5;
 		private var nextEnemySpawnSector:int = -1;
+		private var timeUntilBgParticleSpawn:Number = 0;
 		
-		// if you play the game long enough to overflow a uint, you deserve whatever
-		// awesomeness happens as a result
-		private var totalTicks:uint = 0;
+		private var backgroundEmitter:Emitter;
 		
 		private var levelTimeText:Text = new Text("");
 		private var levelText:Text = new Text("1");
@@ -47,26 +47,23 @@ package
 		private var progressChart:HumanOutline;
 		
 		private var playerResetTween:LinearMotion;
-		private var sequenceTicksRemaining:int;
+		private var sequenceTimeRemaining:Number;
 		private var sequenceOverlay:Image;
 		private var deathSequence:Boolean = false;		
 		private var winSequence:Boolean = false;
 		
 		private var difficultyTimes:Array = [
-			30*ONE_SECOND, 20*ONE_SECOND, 30*ONE_SECOND, 15*ONE_SECOND, 45*ONE_SECOND, 
-			15*ONE_SECOND, 30*ONE_SECOND, 15*ONE_SECOND, 40*ONE_SECOND, 90*ONE_SECOND
+			30, 15, 30, 20, 45, 20, 30, 20, 40, 90
 		];
 		private var ammoSpawnTimes:Array = [
-			5*ONE_SECOND, 4*ONE_SECOND, 4*ONE_SECOND, 5*ONE_SECOND, 4*ONE_SECOND, 
-			3*ONE_SECOND, 5*ONE_SECOND, 7*ONE_SECOND, 4*ONE_SECOND, 7*ONE_SECOND
+			5, 4, 4, 5, 4, 4, 5, 7, 4, 7
 		];
 		private var enemySpawnTimes:Array = [
-			4*ONE_SECOND, ONE_SECOND, 3*ONE_SECOND, ONE_SECOND/3, 2*ONE_SECOND, 
-			ONE_SECOND/3, ONE_SECOND, ONE_SECOND/3, ONE_SECOND, ONE_SECOND
+			4, 0.5, 2, 0.5, 2, 0.5, 1.5, 0.33, 1, 1
 		];
 		
 		private var difficulty:uint = 0;		
-		private var difficultyTicksRemaining:uint = difficultyTimes[0];
+		private var difficultyTimeRemaining:Number = difficultyTimes[0];
 		
 		private var nextEnemySpawnIndex:uint = 0;
 		private var enemySpawnOrder:Array = [];
@@ -87,6 +84,18 @@ package
 			initEnemySpawnOrder();	
 			initHUD();
 			initPlayer();
+			
+			var e:Entity = new Entity;
+			backgroundEmitter = new Emitter(new BitmapData(5, 5, false, 0x3a3a3a), 5, 5);
+			backgroundEmitter.newType("ambiance", [0]); 
+			backgroundEmitter.relative = false;
+			
+			backgroundEmitter.setMotion("ambiance", 270, FP.screen.height + 10, 10.0, 0, 0, -1);
+			e.layer = 99999;
+			e.graphic = backgroundEmitter;
+			e.x = FP.screen.width / 2;
+			e.y = FP.screen.height / 2;
+			add(e);
 		}
 		
 		private function initEnemySpawnOrder():void
@@ -135,7 +144,7 @@ package
 			overlayEntity.y = 0;
 			add(overlayEntity);
 			
-			sequenceTicksRemaining = 90;
+			sequenceTimeRemaining = 3;
 		}
 		
 		private function commonEndSequence(label:String, directions:String):void
@@ -249,7 +258,7 @@ package
 			overlayEntity.y = 0;
 			add(overlayEntity);
 			
-			sequenceTicksRemaining = 90;
+			sequenceTimeRemaining = 3;
 		}
 		
 		private function handleDebugInputs():void {		
@@ -269,30 +278,35 @@ package
 				// step down a difficulty level and stay awhile
 				if (Input.pressed(Key.J)) {
 					difficulty = Math.max(0, difficulty - 1);
-					difficultyTicksRemaining = int.MAX_VALUE;
+					difficultyTimeRemaining = int.MAX_VALUE;
 				}
 				
 				// bump up a difficulty level, and stay awhile
 				if (Input.pressed(Key.K)) {					
 					difficulty = Math.min(enemySpawnTimes.length - 1, difficulty + 1);
-					difficultyTicksRemaining = int.MAX_VALUE;
+					difficultyTimeRemaining = int.MAX_VALUE;
 				}				
 			}
 		}
 		
 		override public function update():void 
 		{	
-			totalTicks++;
+			timeUntilBgParticleSpawn -= FP.elapsed;
+			if (timeUntilBgParticleSpawn <= 0) {				
+				backgroundEmitter.emit("ambiance", FP.screen.width * Math.random(), -7);
+				timeUntilBgParticleSpawn = BG_PARTICLE_SPAWN_TIME + timeUntilBgParticleSpawn;
+			}
 			
 			handleDebugInputs();
 			
-			if (difficulty < enemySpawnTimes.length - 1 && difficultyTicksRemaining-- == 0) {
+			difficultyTimeRemaining -= FP.elapsed;
+			if (difficulty < enemySpawnTimes.length - 1 && difficultyTimeRemaining <= 0) {
 				difficulty++;
-				difficultyTicksRemaining = difficultyTimes[difficulty];
+				difficultyTimeRemaining = difficultyTimes[difficulty] + difficultyTimeRemaining;
 			}
 			
 			if (deathSequence || winSequence) {
-				if (sequenceTicksRemaining == 0) {
+				if (sequenceTimeRemaining == 0) {
 					if (deathSequence) {
 						endDeathSequence();
 					}
@@ -300,17 +314,20 @@ package
 						endWinSequence();
 					}
 					
-					sequenceTicksRemaining = -1;
+					sequenceTimeRemaining = -1;
 				}
-				else if (sequenceTicksRemaining == -1) {				
+				else if (sequenceTimeRemaining == -1) {				
 					if (Input.pressed(Key.SPACE)) {
 						FP.world = new MyWorld;
 						return;
 					}
 				}
 				else {
-					sequenceOverlay.alpha = (90 - sequenceTicksRemaining) / 90;
-					sequenceTicksRemaining--;					
+					sequenceOverlay.alpha = (3.0 - sequenceTimeRemaining) / 3.0;
+					sequenceTimeRemaining -= FP.elapsed;
+					if (sequenceTimeRemaining <= 0) {
+						sequenceTimeRemaining = 0;
+					}
 					player.x = playerResetTween.x;			
 					player.y = playerResetTween.y;
 				}
@@ -322,31 +339,31 @@ package
 				return;
 			}
 			
-			var levelSeconds:uint = Math.floor(difficultyTicksRemaining / ONE_SECOND);
+			var levelSeconds:uint = Math.floor(difficultyTimeRemaining);
 				
 			levelText.text = "" + (difficulty + 1);			
 			levelTimeText.text = levelSeconds + "s";
 			bulletText.text = "" + player.bullets;
 			
-			if (ticksUntilAmmoHostSpawn <= 0) {
+			if (timeUntilAmmoHostSpawn <= 0) {
 				spawnAmmoHost();
 			}
 			else {
-				ticksUntilAmmoHostSpawn--;
+				timeUntilAmmoHostSpawn -= FP.elapsed;
 			}
 			
-			if (ticksUntilCloneHostSpawn <= 0) {
+			if (timeUntilCloneHostSpawn <= 0) {
 				spawnCloneHost();
 			}
 			else {
-				ticksUntilCloneHostSpawn--;
+				timeUntilCloneHostSpawn -= FP.elapsed;
 			}
 			
-			if (ticksUntilEnemySpawn <= 0) {
+			if (timeUntilEnemySpawn <= 0) {
 				spawnEnemy();
 			}
 			else {
-				ticksUntilEnemySpawn--;
+				timeUntilEnemySpawn -= FP.elapsed;
 			}
 			
 			super.update();
@@ -369,7 +386,7 @@ package
 			cloneHost.y = -(cloneHost.height);
 			add(cloneHost);				
 			
-			ticksUntilCloneHostSpawn = 7 * ONE_SECOND;
+			timeUntilCloneHostSpawn = 8;
 		}
 		
 		private function spawnEnemy():void
@@ -383,7 +400,7 @@ package
 			e.y = -(e.height) - 1;
 			
 			add(e);			
-			ticksUntilEnemySpawn = enemySpawnTimes[difficulty];					
+			timeUntilEnemySpawn = enemySpawnTimes[difficulty];					
 		}
 		
 		private function spawnAmmoHost():void
@@ -403,7 +420,7 @@ package
 			ammoHost.y = -(ammoHost.height);
 			add(ammoHost);				
 			
-			ticksUntilAmmoHostSpawn = ammoSpawnTimes[difficulty];
+			timeUntilAmmoHostSpawn = ammoSpawnTimes[difficulty];
 		}
 		
 		/**

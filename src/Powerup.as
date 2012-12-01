@@ -9,6 +9,7 @@ package
 	public class Powerup extends Entity
 	{
 		private static const LAYER:int = 100;
+		private static const SPEED:uint = 60; // pixels per second
 		
 		[Embed(source='assets/bullet_17x17.png')] private const BULLET:Class;
 		private var powerupImage:Image;
@@ -33,7 +34,7 @@ package
 		
 		override public function update():void
 		{
-			y += 1;
+			moveBy(0, SPEED * FP.elapsed);
 			
 			if (y > FP.screen.height || x > FP.screen.width || x < 0 || y < 0) {				
 				destroy();

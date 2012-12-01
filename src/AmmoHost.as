@@ -16,6 +16,7 @@ package
 	{
 		private static const LAYER:int = 50;
 		private static const RUPTURE_TIME:Number = 1.5; // seconds to rupture
+		private static const SPEED:uint = 80; // pixels per second
 		
 		[Embed(source='assets/ammo_host_96x128.png')] private const HOST:Class;
 		[Embed(source='assets/bullet_17x17.png')] private const BULLET:Class;
@@ -62,9 +63,9 @@ package
 		}
 		
 		override public function update():void
-		{			
+		{	
 			if (collidable) {
-				y += 2;
+				moveBy(0, SPEED * FP.elapsed);
 				if (collide("player", x, y)) {
 					if (collisionTime < 0) {
 						collisionTime = 0;	

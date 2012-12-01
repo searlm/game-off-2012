@@ -10,6 +10,7 @@ package
 	public class Bullet extends Entity
 	{
 		private static const LAYER:int = 100;
+		private static const SPEED:uint = 300;
 		
 		[Embed(source='assets/bullet_17x17.png')] private const BULLET:Class;
 		
@@ -35,11 +36,11 @@ package
 		
 		override public function update():void 
 		{
+			moveBy(0, -SPEED * FP.elapsed);
+			
 			if (y < height) {
 				FP.world.recycle(this);//remove(this);
 			}
-			
-			y -= 10;
 		}
 		
 		public function destroy():void 
