@@ -6,6 +6,8 @@ package
 	import net.flashpunk.FP;
 	import net.flashpunk.Sfx;
 	import net.flashpunk.graphics.Image;
+	import net.flashpunk.graphics.Spritemap;
+	import net.flashpunk.masks.Hitbox;
 	import net.flashpunk.masks.Pixelmask;
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
@@ -18,6 +20,10 @@ package
 		[Embed(source='assets/hero_up_48x53.png')] private const PLAYER_UP:Class;
 		[Embed(source='assets/hero_down_48x53.png')] private const PLAYER_DOWN:Class;
 		[Embed(source='assets/hero_right_48x53.png')] private const PLAYER_RIGHT:Class;
+		
+		[Embed(source='assets/hero_glasses_spritemap.png')] private const PLAYER_WIN:Class;
+		private var winSprite:Spritemap = new Spritemap(PLAYER_WIN, 128, 126);
+		private var winAnimation:Boolean = false; 
 		
 		private const IMAGE_LEFT:Image = new Image(PLAYER_LEFT);
 		private const IMAGE_UP:Image = new Image(PLAYER_UP);
@@ -45,6 +51,7 @@ package
 			//playerImage = new Image(new BitmapData(31, 31));
 			//playerImage.color = 0xd97925;
 			//graphic = playerImage;
+			winSprite.add("win", [0, 1, 0, 2], 8, true);
 			image = IMAGE_DOWN;
 			graphic = image;
 			mask = MASK_DOWN;
@@ -52,8 +59,24 @@ package
 			type = "player";
 		}
 		
+		/**
+		 * Start the winning "shades" animation.
+		 */ 
+		public function shadesOn():void
+		{
+			collidable = false;
+			graphic = winSprite;
+			winAnimation = true;
+			mask = new Pixelmask(new BitmapData(128, 126, false, 0xffffff));
+			winSprite.play("win", true);
+		}
+		
 		override public function update():void
 		{
+			if (winAnimation) {
+				return;
+			}
+			
 			if (bulletWait > 0) {
 				bulletWait--;
 			}

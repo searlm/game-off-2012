@@ -234,6 +234,7 @@ package
 			winSequence = true;
 			
 			player.layer = HUD_LAYER;	
+			player.shadesOn();			
 			startPlayerResetTween();
 			
 			// TODO switch to the animated sprite loop
@@ -314,7 +315,10 @@ package
 					player.y = playerResetTween.y;
 				}
 				
-				//super.update();
+				if (winSequence) {					
+					super.update();
+				}				
+				
 				return;
 			}
 			
