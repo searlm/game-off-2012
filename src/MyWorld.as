@@ -38,6 +38,8 @@ package
 		private var timeUntilEnemySpawn:Number = 5;
 		private var nextEnemySpawnSector:int = -1;
 		private var timeUntilBgParticleSpawn:Number = 0;
+		private var nextEnemySpawnIndex:uint = 0;
+		private var enemySpawnOrder:Array = [];
 		
 		private var backgroundEmitter:Emitter;
 		
@@ -64,10 +66,8 @@ package
 		
 		private var difficulty:uint = 0;		
 		private var difficultyTimeRemaining:Number = difficultyTimes[0];
-		
-		private var nextEnemySpawnIndex:uint = 0;
-		private var enemySpawnOrder:Array = [];
-		
+		 
+		// world stats
 		public var ammoCollected:uint = 0;
 		public var shotsFired:uint = 0;
 		public var missedPickups:uint = 0;
@@ -98,6 +98,9 @@ package
 			add(e);
 		}
 		
+		/**
+		 * Generate a random list of enemy spawn indices.
+		 */
 		private function initEnemySpawnOrder():void
 		{
 			// shuffle the spawn order		
@@ -127,6 +130,9 @@ package
 			playerResetTween.start();	
 		}
 		
+		/**
+		 * Set up the overlay and initial transition params for the death sequence.
+		 */
 		public function startDeathSequence():void
 		{
 			deathSequence = true;
@@ -147,6 +153,36 @@ package
 			sequenceTimeRemaining = 3;
 		}
 		
+		/**
+		 * Set up the overlay and initial transition params for the win sequence.
+		 */
+		private function startWinSequence():void
+		{
+			winSequence = true;
+			
+			player.layer = HUD_LAYER;	
+			player.shadesOn();			
+			startPlayerResetTween();
+			
+			// TODO switch to the animated sprite loop
+			
+			var overlayBitmap:BitmapData = new BitmapData(FP.screen.width, FP.screen.height, false, 0x2b2b2b); 
+			sequenceOverlay = new Image(overlayBitmap);
+			sequenceOverlay.alpha = 0;
+			var overlayEntity:Entity = new Entity;
+			overlayEntity.graphic = sequenceOverlay;
+			overlayEntity.layer = 1;		
+			overlayEntity.x = 0;
+			overlayEntity.y = 0;
+			add(overlayEntity);
+			
+			sequenceTimeRemaining = 3;
+		}
+		
+		/**
+		 * The generic ending sequence handler -- sets up stats displays, 
+		 * etc.
+		 */
 		private function commonEndSequence(label:String, directions:String):void
 		{
 			removeTween(playerResetTween);
@@ -190,19 +226,29 @@ package
 			addStatText("Clone hosts ruptured", rupturedCloneHosts + " / " + (missedCloneHosts + rupturedCloneHosts), FP.screen.width - 240, yBaseline + 100);						
 		}
 		
+		/**
+		 * Win sequence finished... display the stats screen.
+		 */
 		private function endWinSequence():void
 		{			
 			commonEndSequence("You win!", "Press the spacebar to play again");
 		}
 		
+		/**
+		 * Death sequence finished... display the stats screen.
+		 */
 		private function endDeathSequence():void
 		{
 			commonEndSequence("Game over", "Press the spacebar to try again");
 		}
 		
+		/**
+		 * Display a "Label: value" pair, positioned relative to the ":" char for
+		 * easy horizontal alignment. 
+		 */
 		private function addStatText(label:String, value:Object, labelEndX:uint, labelEndY:int):void
 		{
-			// label
+			// Label:
 			var labelText:Text = new Text(label + ":");
 			labelText.font = "MainFont";
 			labelText.color = 0xdddddd;
@@ -215,6 +261,7 @@ package
 			labelEntity.y = labelEndY;
 			add(labelEntity);
 			
+			// Value
 			var valueText:Text = new Text("" + value);
 			valueText.font = "MainFont";
 			valueText.color = 0xffffff;
@@ -228,6 +275,9 @@ package
 			add(levelEntity);
 		}
 		
+		/**
+		 * Clone host ruptured... add progress toward goal.
+		 */
 		public function addClone():void
 		{
 			clones += 4;
@@ -238,32 +288,12 @@ package
 			}
 		}
 		
-		private function startWinSequence():void
-		{
-			winSequence = true;
-			
-			player.layer = HUD_LAYER;	
-			player.shadesOn();			
-			startPlayerResetTween();
-			
-			// TODO switch to the animated sprite loop
-			
-			var overlayBitmap:BitmapData = new BitmapData(FP.screen.width, FP.screen.height, false, 0x2b2b2b); 
-			sequenceOverlay = new Image(overlayBitmap);
-			sequenceOverlay.alpha = 0;
-			var overlayEntity:Entity = new Entity;
-			overlayEntity.graphic = sequenceOverlay;
-			overlayEntity.layer = 1;		
-			overlayEntity.x = 0;
-			overlayEntity.y = 0;
-			add(overlayEntity);
-			
-			sequenceTimeRemaining = 3;
-		}
-		
+		/**
+		 * Support debugging keypresses.
+		 */
 		private function handleDebugInputs():void {		
 			if (DEBUG) {		
-				// note: input mappings don't respect the keyboard layout...
+				// note: input mappings don't respect one's keyboard layout...
 				
 				// suicide
 				if (Input.pressed(Key.S)) {
@@ -291,60 +321,39 @@ package
 		
 		override public function update():void 
 		{	
-			timeUntilBgParticleSpawn -= FP.elapsed;
-			if (timeUntilBgParticleSpawn <= 0) {				
-				backgroundEmitter.emit("ambiance", FP.screen.width * Math.random(), -7);
-				timeUntilBgParticleSpawn = BG_PARTICLE_SPAWN_TIME + timeUntilBgParticleSpawn;
-			}
+			drawBackgroundParticles();
 			
 			handleDebugInputs();
 			
-			difficultyTimeRemaining -= FP.elapsed;
-			if (difficulty < enemySpawnTimes.length - 1 && difficultyTimeRemaining <= 0) {
-				difficulty++;
-				difficultyTimeRemaining = difficultyTimes[difficulty] + difficultyTimeRemaining;
-			}
+			updateDifficulty();
 			
-			if (deathSequence || winSequence) {
-				if (sequenceTimeRemaining == 0) {
-					if (deathSequence) {
-						endDeathSequence();
-					}
-					else {
-						endWinSequence();
-					}
-					
-					sequenceTimeRemaining = -1;
-				}
-				else if (sequenceTimeRemaining == -1) {				
-					if (Input.pressed(Key.SPACE)) {
-						FP.world = new MyWorld;
-						return;
-					}
-				}
-				else {
-					sequenceOverlay.alpha = (3.0 - sequenceTimeRemaining) / 3.0;
-					sequenceTimeRemaining -= FP.elapsed;
-					if (sequenceTimeRemaining <= 0) {
-						sequenceTimeRemaining = 0;
-					}
-					player.x = playerResetTween.x;			
-					player.y = playerResetTween.y;
-				}
-				
-				if (winSequence) {					
-					super.update();
-				}				
-				
+			if (updateEndingSequence()) {
 				return;
 			}
 			
-			var levelSeconds:uint = Math.floor(difficultyTimeRemaining);
-				
+			updateHUD();
+			
+			updateSpawns();
+			
+			super.update();
+		}
+		
+		/**
+		 * Update HUD stats (progress, etc).
+		 */
+		private function updateHUD():void
+		{
+			var levelSeconds:uint = Math.floor(difficultyTimeRemaining);				
 			levelText.text = "" + (difficulty + 1);			
 			levelTimeText.text = levelSeconds + "s";
 			bulletText.text = "" + player.bullets;
-			
+		}
+		
+		/**
+		 * Introduce new entities to the world.
+		 */
+		private function updateSpawns():void
+		{
 			if (timeUntilAmmoHostSpawn <= 0) {
 				spawnAmmoHost();
 			}
@@ -365,10 +374,82 @@ package
 			else {
 				timeUntilEnemySpawn -= FP.elapsed;
 			}
-			
-			super.update();
 		}
 		
+		/**
+		 * Update ending sequence entities, if applicable.  If this function
+		 * returns true, the update function should abort, as all required
+		 * processing is done.
+		 * 
+		 * @return true if the ending sequence should control the update loop	
+		 */ 
+		private function updateEndingSequence():Boolean
+		{
+			if (deathSequence || winSequence) {
+				if (sequenceTimeRemaining == 0) {
+					if (deathSequence) {
+						endDeathSequence();
+					}
+					else {
+						endWinSequence();
+					}
+					
+					sequenceTimeRemaining = -1;
+				}
+				else if (sequenceTimeRemaining == -1) {				
+					if (Input.pressed(Key.SPACE)) {
+						FP.world = new MyWorld;
+						return true;
+					}
+				}
+				else {
+					sequenceOverlay.alpha = (3.0 - sequenceTimeRemaining) / 3.0;
+					sequenceTimeRemaining -= FP.elapsed;
+					if (sequenceTimeRemaining <= 0) {
+						sequenceTimeRemaining = 0;
+					}
+					player.x = playerResetTween.x;			
+					player.y = playerResetTween.y;
+				}
+				
+				if (winSequence) {					
+					super.update();
+				}				
+				
+				return true;
+			}
+			
+			return false;
+		}
+		
+		/**
+		 * Called during update loop to march the difficulty ever upwards.
+		 */ 
+		private function updateDifficulty():void
+		{
+			difficultyTimeRemaining -= FP.elapsed;
+			if (difficulty < enemySpawnTimes.length - 1 && difficultyTimeRemaining <= 0) {
+				difficulty++;
+				difficultyTimeRemaining = difficultyTimes[difficulty] + difficultyTimeRemaining;
+			}
+		}
+		
+		/**
+		 * Emit particles at the specified interval to create the quick-n-dirty
+		 * background.
+		 */
+		private function drawBackgroundParticles():void
+		{
+			timeUntilBgParticleSpawn -= FP.elapsed;
+			if (timeUntilBgParticleSpawn <= 0) {				
+				backgroundEmitter.emit("ambiance", FP.screen.width * Math.random(), -7);
+				timeUntilBgParticleSpawn = BG_PARTICLE_SPAWN_TIME + timeUntilBgParticleSpawn;
+			}
+		}
+		
+		/**
+		 * Introduce a new clone host at the top of the world.
+		 */
 		private function spawnCloneHost():void
 		{
 			var cloneHost:CloneHost = create(CloneHost, false) as CloneHost;//new CloneHost;
@@ -389,6 +470,9 @@ package
 			timeUntilCloneHostSpawn = 8;
 		}
 		
+		/**
+		 * Introduce a new enemy at the top of the world.
+		 */
 		private function spawnEnemy():void
 		{	
 			var i:int = nextEnemySpawnIndex;
@@ -403,6 +487,9 @@ package
 			timeUntilEnemySpawn = enemySpawnTimes[difficulty];					
 		}
 		
+		/**
+		 * Introduce a new ammo host at the top of the world.
+		 */
 		private function spawnAmmoHost():void
 		{
 			var ammoHost:AmmoHost = create(AmmoHost, false) as AmmoHost;//new AmmoHost;
