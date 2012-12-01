@@ -138,7 +138,7 @@ package
 			sequenceTicksRemaining = 90;
 		}
 		
-		private function commonEndSequence(label:String):void
+		private function commonEndSequence(label:String, directions:String):void
 		{
 			removeTween(playerResetTween);
 			playerResetTween = null;
@@ -147,7 +147,7 @@ package
 			
 			progressChart.toForeground();
 			
-			var directionsText:Text = new Text("press the spacebar to try again");		
+			var directionsText:Text = new Text(directions);
 			directionsText.font = "Blackout Midnight";
 			directionsText.color = 0xdddddd;
 			directionsText.size = 24;
@@ -183,12 +183,12 @@ package
 		
 		private function endWinSequence():void
 		{			
-			commonEndSequence("You win!");
+			commonEndSequence("You win!", "Press the spacebar to play again");
 		}
 		
 		private function endDeathSequence():void
 		{
-			commonEndSequence("Game over");
+			commonEndSequence("Game over", "Press the spacebar to try again");
 		}
 		
 		private function addStatText(label:String, value:Object, labelEndX:uint, labelEndY:int):void
