@@ -9,6 +9,9 @@ package
 	import net.flashpunk.graphics.Image;
 	import net.flashpunk.graphics.Text;
 	
+	/**
+	 * Helper class for drawing the overall progress bar.
+	 */
 	public class HumanOutline
 	{
 		// the outline should be behind pretty much everything else
@@ -50,6 +53,9 @@ package
 			world.add(percentTextEntity);
 		}
 		
+		/**
+		 * Update the completion percentage.
+		 */
 		public function set progress(percent:uint):void
 		{
 			percentComplete = percent;

@@ -12,6 +12,9 @@ package
 	import net.flashpunk.utils.Input;
 	import net.flashpunk.utils.Key;
 
+	/**
+	 * The controllable player entity.
+	 */
 	public class Player extends Entity
 	{
 		private static const LAYER:int = 100;
@@ -76,6 +79,16 @@ package
 				return;
 			}
 			
+			handlePickups();	
+			handleMovement();
+			handleWeapons();
+		}
+		
+		/**
+		 * Process powerup collisions.
+		 */
+		private function handlePickups():void
+		{
 			// TODO multiple powerup collisions in a frame?
 			var p:Powerup = collide("powerup", x, y) as Powerup;
 			if (p) {
@@ -84,29 +97,13 @@ package
 				(FP.world as MyWorld).ammoCollected++;
 				p.destroy();
 			}
-			
-			image = IMAGE_DOWN;
-			mask = MASK_DOWN;
-			
-			var offset:Number = SPEED * FP.elapsed;
-			var xOffset:Number = 0;
-			var yOffset:Number = 0;
-			if (Input.check(Key.UP)) { yOffset = -offset; image = IMAGE_UP; mask = MASK_UP;}
-			if (Input.check(Key.DOWN)) { yOffset = offset; image = IMAGE_DOWN; mask = MASK_DOWN;}	
-			if (Input.check(Key.LEFT)) { xOffset = -offset; image = IMAGE_LEFT; mask = MASK_LEFT;}
-			if (Input.check(Key.RIGHT)) { xOffset = offset; image = IMAGE_RIGHT; mask = MASK_RIGHT;}
-			
-			moveBy(xOffset, yOffset);
-			
-			graphic = image;
-			
-			x = Math.max(x, 0);
-			x = Math.min(x, FP.screen.width - width);
-			
-			var myWorld:MyWorld = FP.world as MyWorld;
-			y = Math.max(y, 0);
-			y = Math.min(y, FP.screen.height - height);
-			
+		}
+		
+		/**
+		 * Process weapons input.
+		 */
+		private function handleWeapons():void
+		{
 			if (bulletWait > 0) {				
 				bulletWait -= FP.elapsed;
 			}
@@ -122,6 +119,33 @@ package
 				(FP.world as MyWorld).shotsFired++;
 				bulletWait = 0.1;
 			}
+		}		
+		
+		/**
+		 * Process movement controls, and update the graphics accordingly.
+		 */
+		private function handleMovement():void
+		{
+			image = IMAGE_DOWN;
+			mask = MASK_DOWN;
+			
+			var offset:Number = SPEED * FP.elapsed;
+			var xOffset:Number = 0;
+			var yOffset:Number = 0;
+			if (Input.check(Key.UP)) { yOffset = -offset; image = IMAGE_UP; mask = MASK_UP;}
+			if (Input.check(Key.DOWN)) { yOffset = offset; image = IMAGE_DOWN; mask = MASK_DOWN;}	
+			if (Input.check(Key.LEFT)) { xOffset = -offset; image = IMAGE_LEFT; mask = MASK_LEFT;}
+			if (Input.check(Key.RIGHT)) { xOffset = offset; image = IMAGE_RIGHT; mask = MASK_RIGHT;}			
+			moveBy(xOffset, yOffset);
+			
+			graphic = image;
+			
+			x = Math.max(x, 0);
+			x = Math.min(x, FP.screen.width - width);
+			
+			var myWorld:MyWorld = FP.world as MyWorld;
+			y = Math.max(y, 0);
+			y = Math.min(y, FP.screen.height - height);
 		}
 	}
 }

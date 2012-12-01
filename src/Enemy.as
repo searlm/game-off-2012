@@ -12,13 +12,18 @@ package
 	import net.flashpunk.tweens.misc.ColorTween;
 	import net.flashpunk.utils.Ease;
 
+	/**
+	 * The basic enemy entity -- chases the player, kills
+	 * on contact.
+	 */
 	public class Enemy extends Entity
 	{
 		private static const LAYER:int = 100;
 		private static const MIN_Y_COORD:int = 0;
 		private static const SPEED:uint = 40;
 		
-		[Embed(source='assets/bad_dude_64x64.png')] private const BAD_DUDE:Class;
+		[Embed(source='assets/bad_dude_64x64.png')] 
+		private const BAD_DUDE:Class;
 		
 		private var enemyImage:Image;
 		private var explosionEmitter:Emitter;

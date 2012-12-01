@@ -7,12 +7,16 @@ package
 	import net.flashpunk.Sfx;
 	import net.flashpunk.graphics.Image;
 
+	/**
+	 * The basic player weapon.
+	 */
 	public class Bullet extends Entity
 	{
 		private static const LAYER:int = 100;
 		private static const SPEED:uint = 300;
 		
-		[Embed(source='assets/bullet_17x17.png')] private const BULLET:Class;
+		[Embed(source='assets/bullet_17x17.png')] 
+		private const BULLET:Class;
 		
 		private var bulletImage:Image;
 		

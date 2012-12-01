@@ -17,7 +17,7 @@ package
 		[Embed(source='assets/hero_400x439.png')] 
 		private const HERO:Class;
 		
-		[Embed(source = 'assets/Blackout Midnight.ttf', embedAsCFF="false", fontFamily = 'Blackout Midnight')] 
+		[Embed(source = 'assets/Blackout Midnight.ttf', embedAsCFF="false", fontFamily = 'TitleFont')] 
 		private const MAIN_FONT:Class;
 		
 		private var mainText:Text = new Text("infeckshun");		
@@ -25,8 +25,7 @@ package
 		private var copyrightText:Text = new Text("(C) S. Martin & L. Briguglio, 2012");
 		
 		public function TitleScreen()
-		{
-			// TODO figure out dat CSS (?)			
+		{		
 			FP.screen.color = 0x2b2b2b;
 			
 			var hero:Entity = new Entity;
@@ -41,17 +40,17 @@ package
 			
 			mainText.color = 0xf9f9f9;
 			mainText.size = 56;
-			mainText.font = "Blackout Midnight";
+			mainText.font = "TitleFont";
 			addText(mainText, 32, FP.screen.height / 2);
 			
 			directionsText.color = 0xdddddd;
 			directionsText.size = 20;
-			directionsText.font = "Blackout Midnight";
+			directionsText.font = "TitleFont";
 			addText(directionsText, 32, FP.screen.height / 2 + 64);
 			
 			copyrightText.color = 0x999999;
 			copyrightText.size = 18;
-			copyrightText.font = "Blackout Midnight";
+			copyrightText.font = "TitleFont";
 			addText(copyrightText, FP.screen.width - copyrightText.textWidth - 8, FP.screen.height - copyrightText.textHeight - 4);			
 		}
 		

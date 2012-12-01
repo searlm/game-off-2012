@@ -12,14 +12,20 @@ package
 	import net.flashpunk.tweens.misc.ColorTween;
 	import net.flashpunk.utils.Ease;
 
+	/**
+	 * A host entity that drops ammo on rupture.
+	 */
 	public class AmmoHost extends Entity
 	{
 		private static const LAYER:int = 50;
 		private static const RUPTURE_TIME:Number = 1.5; // seconds to rupture
 		private static const SPEED:uint = 80; // pixels per second
 		
-		[Embed(source='assets/ammo_host_96x128.png')] private const HOST:Class;
-		[Embed(source='assets/bullet_17x17.png')] private const BULLET:Class;
+		[Embed(source='assets/ammo_host_96x128.png')] 
+		private const HOST:Class;
+		
+		[Embed(source='assets/bullet_17x17.png')] 
+		private const BULLET:Class;
 		
 		private var hostImage:Image;
 		private var explosionEmitter:Emitter;

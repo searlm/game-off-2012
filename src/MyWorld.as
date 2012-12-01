@@ -193,7 +193,7 @@ package
 			progressChart.toForeground();
 			
 			var directionsText:Text = new Text(directions);
-			directionsText.font = "Blackout Midnight";
+			directionsText.font = "TitleFont";
 			directionsText.color = 0xdddddd;
 			directionsText.size = 24;
 			
@@ -205,7 +205,7 @@ package
 			add(directionsEntity);
 			
 			var mainText:Text = new Text(label);		
-			mainText.font = "Blackout Midnight";
+			mainText.font = "TitleFont";
 			mainText.color = 0xffffff;
 			mainText.size = 72;
 			

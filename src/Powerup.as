@@ -6,12 +6,17 @@ package
 	import net.flashpunk.Sfx;
 	import flash.display.BitmapData;
 
+	/**
+	 * The ammo pickup entity.
+	 */
 	public class Powerup extends Entity
 	{
 		private static const LAYER:int = 100;
 		private static const SPEED:uint = 60; // pixels per second
 		
-		[Embed(source='assets/bullet_17x17.png')] private const BULLET:Class;
+		[Embed(source='assets/bullet_17x17.png')] 
+		private const BULLET:Class;
+		
 		private var powerupImage:Image;
 		
 		public function Powerup()
