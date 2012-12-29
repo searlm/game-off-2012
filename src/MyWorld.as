@@ -36,7 +36,6 @@ package
 		private var timeUntilAmmoHostSpawn:Number = 0;
 		private var nextAmmoHostSpawnSector:int = -1;
 		private var timeUntilEnemySpawn:Number = 5;
-		private var nextEnemySpawnSector:int = -1;
 		private var timeUntilBgParticleSpawn:Number = 0;
 		private var nextEnemySpawnIndex:uint = 0;
 		private var enemySpawnOrder:Array = [];
