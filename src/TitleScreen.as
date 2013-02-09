@@ -21,7 +21,7 @@ package
 		private const MAIN_FONT:Class;
 		
 		private var mainText:Text = new Text("infeckshun");		
-		private var directionsText:Text = new Text("press the spacebar to begin");
+		private var directionsText:Text = new Text("press the spacebar to play");
 		private var copyrightText:Text = new Text("(C) S. Martin & L. Briguglio, 2012");
 		
 		public function TitleScreen()
