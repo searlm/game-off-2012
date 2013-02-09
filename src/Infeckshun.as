@@ -9,9 +9,8 @@ package
 		public function Infeckshun()
 		{
 			super(640, 480, 60, false);
-			
-			FP.world = new TitleScreen;
+
+			FP.world = new TutorialScreen;
 		}
-		
 	}
 }
