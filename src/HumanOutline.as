@@ -17,12 +17,11 @@ package
 		// the outline should be behind pretty much everything else
 		private static const LAYER:int = 9999;
 		
-		[Embed(source='assets/human_outline.png')] private const OUTLINE:Class;
-		
-		private var percentComplete:uint = 0;
+		[Embed(source='assets/human_outline.png')]
+        private const OUTLINE:Class;
+
 		private var outline:Entity = new Entity;
 		private var progressBar:Entity = new Entity;
-		private var world:World;
 		private var percentText:Text = new Text("0%");
 		private var percentTextEntity:Entity;
 		
@@ -32,7 +31,7 @@ package
 			outline.layer = LAYER;
 			outline.x = x;
 			outline.y = y;
-			
+
 			progressBar.graphic = new Image(new BitmapData(65, 1, false, 0xb2e335));						
 			progressBar.layer = LAYER;
 			progressBar.x = x;
@@ -58,13 +57,11 @@ package
 		 */
 		public function set progress(percent:uint):void
 		{
-			percentComplete = percent;
-			
 			percentText.text = percent + "%";
 			percentTextEntity.x = outline.x + 2 + 65 / 2 - percentText.width / 2;
 			percentTextEntity.y = outline.y + 60 - percentText.height / 2;
 			
-			var h:uint = Math.max(112 * (percentComplete / 100), 1);
+			var h:uint = Math.max(112 * (percent / 100), 1);
 			progressBar.graphic = new Image(new BitmapData(65, h, false, 0xb2e335));
 			progressBar.y = outline.y + 116 - h;
 		}
