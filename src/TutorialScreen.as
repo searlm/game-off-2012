@@ -1,15 +1,13 @@
-package
-{
-	import net.flashpunk.Entity;
-	import net.flashpunk.FP;
-	import net.flashpunk.World;
-	import net.flashpunk.graphics.Image;
+package {
+    import net.flashpunk.Entity;
+    import net.flashpunk.FP;
+    import net.flashpunk.World;
+    import net.flashpunk.graphics.Image;
 
     /**
      * A simple set of static tutorial slides with next/skip buttons.
      */
-	public class TutorialScreen extends World
-	{	
+    public class TutorialScreen extends World {
         private var tutorialStep:int = 0;
 
         private var tutorialEntity:Entity;
@@ -34,51 +32,46 @@ package
             new Image(TUTORIAL_THREE), new Image(TUTORIAL_FOUR)
         ];
 
-		public function TutorialScreen()
-		{		
-			FP.screen.color = 0x2b2b2b;
+        public function TutorialScreen() {
+            FP.screen.color = 0x2b2b2b;
 
             tutorialEntity = new Entity;
             tutorialEntity.graphic = tutorialImages[tutorialStep];
             tutorialEntity.layer = 9999;
             add(tutorialEntity);
-			
-			nextButton = new Button(this, FP.width - 64 - 16, FP.height / 2 - 32, 64, 64, "Next", next);
+
+            nextButton = new Button(this, FP.width - 64 - 16, FP.height / 2 - 32, 64, 64, "Next", next);
             skipButton = new Button(this, FP.width / 2 - 32, FP.height - 96, 96, 64, "Skip tutorial", skip);
-		}
-		
-		override public function update():void 
-		{
+        }
+
+        override public function update():void {
             tutorialEntity.graphic = tutorialImages[tutorialStep];
             tutorialEntity.update();
 
-			// iterate through the list of bitmap tutorial images
-			// as the "next" button is pressed
+            // iterate through the list of bitmap tutorial images
+            // as the "next" button is pressed
             nextButton.update();
             skipButton.update();
 
-			super.update();
-		}
+            super.update();
+        }
 
         /**
          * Skip the tutorial, and go straight to the title screen.
          */
-		private function skip():void
-		{
-			FP.world = new TitleScreen;
-		}
+        private function skip():void {
+            FP.world = new TitleScreen;
+        }
 
         /**
          * Proceed to the next tutorial slide.
          */
-		private function next():void
-		{
+        private function next():void {
             if (tutorialStep >= tutorialImages.length - 1) {
                 skip();
-            }
-            else {
+            } else {
                 tutorialStep++;
             }
-		}
-	}
+        }
+    }
 }
